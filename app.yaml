@@ -1,0 +1,37 @@
+# App Engine (standard) — hospedagem estática da landing page DevChat
+# Deploy:  gcloud app deploy
+# Suporta clean URLs por pasta: /pg1 e /pg1/ -> pg1/index.html
+runtime: python312        # runtime exigido apenas para servir estáticos; nenhum código roda
+instance_class: F1
+
+handlers:
+  # Assets com cache longo
+  - url: /assets
+    static_dir: assets
+    secure: always
+    http_headers:
+      Cache-Control: "public, max-age=31536000, immutable"
+
+  # Arquivos com extensão (html, txt, xml, ico, imagens...) servidos diretamente
+  - url: /(.*\.(html|txt|xml|ico|png|jpg|jpeg|webp|svg|css|js|map))$
+    static_files: \1
+    upload: .*\.(html|txt|xml|ico|png|jpg|jpeg|webp|svg|css|js|map)$
+    secure: always
+    http_headers:
+      Cache-Control: "public, max-age=300"
+
+  # Clean URLs por pasta: /pg1 e /pg1/ -> pg1/index.html
+  - url: /(.+?)/?$
+    static_files: \1/index.html
+    upload: .+/index.html
+    secure: always
+    http_headers:
+      Cache-Control: "public, max-age=300"
+
+  # Home
+  - url: /
+    static_files: index.html
+    upload: index.html
+    secure: always
+    http_headers:
+      Cache-Control: "public, max-age=300"

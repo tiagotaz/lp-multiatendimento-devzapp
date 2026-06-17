@@ -1,0 +1,9 @@
+# macOS
+.DS_Store
+
+# Configurações locais do Claude Code (específicas da máquina)
+.claude/
+
+# Logs e temporários
+*.log
+node_modules/

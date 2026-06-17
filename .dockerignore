@@ -1,0 +1,14 @@
+# Não enviar ao build/imagem
+.git/
+.gitignore
+.DS_Store
+*.md
+INFORMACOES-SISTEMA.md
+ANALISE-CONCORRENTES.md
+README.md
+app.yaml
+.gcloudignore
+.dockerignore
+# Artefatos de desenvolvimento (não publicar)
+_modelo/
+partials/

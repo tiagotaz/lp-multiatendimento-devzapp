@@ -1,0 +1,8 @@
+# Arquivos que NÃO sobem no contexto de build/deploy.
+# (O .dockerignore controla o que entra na imagem; este controla o upload ao Cloud Build.)
+.git/
+.gitignore
+.DS_Store
+_modelo/
+partials/
+*.md

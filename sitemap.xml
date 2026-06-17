@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://multiatendimento.devzapp.com.br/</loc>
+    <lastmod>2026-06-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://multiatendimento.devzapp.com.br/compacta/</loc>
+    <lastmod>2026-06-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://multiatendimento.devzapp.com.br/pg1/</loc>
+    <lastmod>2026-06-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url><loc>https://multiatendimento.devzapp.com.br/p1/</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://multiatendimento.devzapp.com.br/p1-compacta/</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://multiatendimento.devzapp.com.br/p2/</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://multiatendimento.devzapp.com.br/p2-compacta/</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://multiatendimento.devzapp.com.br/p3/</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://multiatendimento.devzapp.com.br/p3-compacta/</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://multiatendimento.devzapp.com.br/contabilidade/</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://multiatendimento.devzapp.com.br/contabilidade-compacta/</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <!-- Ao criar /pg2, /pg3... adicione um <url> aqui. -->
+</urlset>
