@@ -96,7 +96,7 @@
   });
 
   /* ---- Envio do lead para o webhook (nome, email, telefone, objetivo, UTMs) ---- */
-  var ENDPOINT = "https://webhook.integrations.devzapp.com.br/webhook/teste-gratis-chat";
+  var ENDPOINT = "https://webhook.integrations.devzapp.com.br/webhook/lp-chat";
   var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
   var setError = function (form, field, on) {
     var el = form.querySelector("[name=" + field + "]");
