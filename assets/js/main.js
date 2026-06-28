@@ -55,9 +55,24 @@
   });
 
   /* ---- Tracking de conversão (Meta Pixel + GA4) ---- */
-  var fire = function (event, params) {
-    try { if (window.fbq) window.fbq("track", event, params || {}); } catch (e) {}
-    try { if (window.gtag) window.gtag("event", event, params || {}); } catch (e) {}
+  var fire = function (event, params, gtagEvent) {
+    console.log("[DevChat] Disparando eventos:", { fbq: event, gtag: gtagEvent || event, params: params });
+    try {
+      if (window.fbq) {
+        window.fbq("track", event, params || {});
+        console.log("[DevChat] ✓ Facebook Pixel disparado:", event);
+      } else {
+        console.warn("[DevChat] ⚠️ window.fbq não encontrado");
+      }
+    } catch (e) { console.error("[DevChat] Erro fbq:", e); }
+    try {
+      if (window.gtag) {
+        window.gtag("event", gtagEvent || event, params || {});
+        console.log("[DevChat] ✓ Google Analytics disparado:", gtagEvent || event);
+      } else {
+        console.warn("[DevChat] ⚠️ window.gtag não encontrado");
+      }
+    } catch (e) { console.error("[DevChat] Erro gtag:", e); }
   };
 
   /* ---- UTMs: captura da URL e persiste (sobrevive à navegação) ---- */
@@ -143,8 +158,28 @@
         utm_term: utms.utm_term || "",
         utm_content: utms.utm_content || ""
       };
+      
+      // Disparar eventos de conversão ANTES do fetch
+      fire("Lead", { content_name: "teste_gratis", num_atendentes: atend }, "generate_lead");
+      
+      // Salvar lead localmente para estatísticas
+      try {
+        var leads = JSON.parse(localStorage.getItem("devchat_leads") || "[]");
+        leads.push({
+          nome: nome,
+          email: email,
+          telefone: tel,
+          atendentes: atend,
+          pagina: location.pathname,
+          data: new Date().toISOString(),
+          utms: utms
+        });
+        // Manter apenas os últimos 100 leads
+        if (leads.length > 100) leads = leads.slice(-100);
+        localStorage.setItem("devchat_leads", JSON.stringify(leads));
+      } catch (e) {}
+      
       var finish = function () {
-        fire("Lead", { content_name: "teste_gratis", num_atendentes: atend });
         showSuccess(form);
       };
       fetch(ENDPOINT, {
@@ -210,14 +245,12 @@
     var href = (a.getAttribute("href") || "").toLowerCase();
     if (MODAL_TRIGGER.test(txt)) {
       ev.preventDefault();
-      fire("InitiateCheckout", { content_name: txt.slice(0, 80) });
       openModal();
       return;
     }
     if (href.indexOf("wa.me") !== -1 || href.indexOf("whatsapp") !== -1) {
       // Por enquanto não redirecionamos para o WhatsApp: abrimos o modal de captação.
       ev.preventDefault();
-      fire("InitiateCheckout", { content_name: txt.slice(0, 80), source: "wa_link" });
       openModal();
       return;
     }

@@ -282,7 +282,7 @@ footer {
 <div class="container">
   <header>
     <h1>🔧 Admin - Páginas do Projeto</h1>
-    <p class="subtitle">Visão geral de todas as páginas e URLs do projeto DevChat</p>
+    <p class="subtitle">Visão geral de todas as páginas, URLs e leads capturados do projeto DevChat</p>
   </header>
 
   <div class="stats">
@@ -302,6 +302,30 @@ footer {
       <div class="label">Versões Compactas</div>
       <div class="value" id="compactPages">0</div>
     </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat-card">
+      <div class="label">Total de Leads</div>
+      <div class="value" id="totalLeads">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Leads Hoje</div>
+      <div class="value" id="leadsToday">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Leads Esta Semana</div>
+      <div class="value" id="leadsWeek">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Leads Este Mês</div>
+      <div class="value" id="leadsMonth">0</div>
+    </div>
+  </div>
+
+  <div class="search-box" style="margin-top: 30px;">
+    <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 16px; color: var(--slate-900);">📊 Últimos Leads Capturados</h2>
+    <div id="leadsTable"></div>
   </div>
 
   <div class="search-box">
@@ -547,6 +571,95 @@ setupSearch();
 
 // Tornar a função copyToClipboard global
 window.copyToClipboard = copyToClipboard;
+
+/* ---- Estatísticas de Leads ---- */
+function getLeads() {
+  try {
+    return JSON.parse(localStorage.getItem('devchat_leads') || '[]');
+  } catch (e) {
+    return [];
+  }
+}
+
+function updateLeadStats() {
+  const leads = getLeads();
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+  
+  const leadsToday = leads.filter(l => new Date(l.data) >= today).length;
+  const leadsWeek = leads.filter(l => new Date(l.data) >= weekAgo).length;
+  const leadsMonth = leads.filter(l => new Date(l.data) >= monthStart).length;
+  
+  document.getElementById('totalLeads').textContent = leads.length;
+  document.getElementById('leadsToday').textContent = leadsToday;
+  document.getElementById('leadsWeek').textContent = leadsWeek;
+  document.getElementById('leadsMonth').textContent = leadsMonth;
+}
+
+function renderLeadsTable() {
+  const leads = getLeads().reverse().slice(0, 20); // Últimos 20 leads
+  const table = document.getElementById('leadsTable');
+  
+  if (leads.length === 0) {
+    table.innerHTML = '<p style="color: var(--slate-500); text-align: center; padding: 20px;">Nenhum lead capturado ainda.</p>';
+    return;
+  }
+  
+  const formatDate = (iso) => {
+    const d = new Date(iso);
+    return d.toLocaleString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+  
+  table.innerHTML = `
+    <div style="overflow-x: auto;">
+      <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+        <thead>
+          <tr style="background: var(--bg-soft); text-align: left;">
+            <th style="padding: 12px; font-weight: 600; color: var(--slate-700);">Data/Hora</th>
+            <th style="padding: 12px; font-weight: 600; color: var(--slate-700);">Nome</th>
+            <th style="padding: 12px; font-weight: 600; color: var(--slate-700);">Email</th>
+            <th style="padding: 12px; font-weight: 600; color: var(--slate-700);">Telefone</th>
+            <th style="padding: 12px; font-weight: 600; color: var(--slate-700);">Atendentes</th>
+            <th style="padding: 12px; font-weight: 600; color: var(--slate-700);">Página</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${leads.map(lead => `
+            <tr style="border-bottom: 1px solid var(--slate-200);">
+              <td style="padding: 12px; color: var(--slate-700);">${formatDate(lead.data)}</td>
+              <td style="padding: 12px; color: var(--slate-900); font-weight: 500;">${lead.nome}</td>
+              <td style="padding: 12px; color: var(--slate-700);">${lead.email}</td>
+              <td style="padding: 12px; color: var(--slate-700);">${lead.telefone}</td>
+              <td style="padding: 12px; color: var(--slate-700);">${lead.atendentes || '-'}</td>
+              <td style="padding: 12px;">
+                <code style="background: var(--bg-soft); padding: 4px 8px; border-radius: 4px; font-size: 12px; color: var(--purple-600);">${lead.pagina}</code>
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+    ${leads.length === 20 ? '<p style="color: var(--slate-500); font-size: 13px; margin-top: 12px; text-align: center;">Mostrando os últimos 20 leads</p>' : ''}
+  `;
+}
+
+// Atualizar estatísticas de leads
+updateLeadStats();
+renderLeadsTable();
+
+// Atualizar a cada 30 segundos
+setInterval(() => {
+  updateLeadStats();
+  renderLeadsTable();
+}, 30000);
 </script>
 </body>
 </html>
