@@ -161,9 +161,6 @@
         utm_content: utms.utm_content || ""
       };
       
-      // Disparar eventos de conversão ANTES do fetch
-      fire("Lead", { content_name: "teste_gratis", num_atendentes: atend }, "generate_lead");
-      
       // Salvar lead localmente para estatísticas
       try {
         var leads = JSON.parse(localStorage.getItem("devchat_leads") || "[]");
@@ -209,6 +206,11 @@
               sendWithRetry(attempt + 1);
             }, delay);
             return;
+          }
+          
+          // Disparar conversão só quando o webhook confirmar sucesso
+          if (response.ok) {
+            fire("Lead", { content_name: "teste_gratis", num_atendentes: atend }, "generate_lead");
           }
           
           // Qualquer outro status ou última tentativa: considerar sucesso de UX
@@ -302,9 +304,6 @@
       ev.preventDefault();
       openModal();
       return;
-    }
-    if (a.classList.contains("btn--primary") || a.classList.contains("btn--light")) {
-      fire("Lead", { content_name: txt.slice(0, 80) });
     }
   });
 
