@@ -113,6 +113,8 @@
   /* ---- Envio do lead para o webhook (nome, email, telefone, objetivo, UTMs) ---- */
   var ENDPOINT = "https://webhook.integrations.devzapp.com.br/webhook/lp-chat";
   var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  var MAX_RETRIES = 3;
+  var RETRY_DELAY = 1000; // 1 segundo inicial
   var setError = function (form, field, on) {
     var el = form.querySelector("[name=" + field + "]");
     var msg = form.querySelector("[data-error-for=" + field + "]");
@@ -179,14 +181,61 @@
         localStorage.setItem("devchat_leads", JSON.stringify(leads));
       } catch (e) {}
       
-      var finish = function () {
-        showSuccess(form);
+      // Função para enviar com retry e timeout
+      var sendWithRetry = function (attempt) {
+        attempt = attempt || 1;
+        
+        // Criar AbortController para timeout
+        var controller = new AbortController();
+        var timeoutId = setTimeout(function () {
+          controller.abort();
+        }, 10000); // 10 segundos de timeout
+        
+        fetch(ENDPOINT, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+          signal: controller.signal
+        })
+        .then(function (response) {
+          clearTimeout(timeoutId);
+          
+          // Se receber 529 ou 503 (Service Unavailable), tentar novamente
+          if ((response.status === 529 || response.status === 503) && attempt < MAX_RETRIES) {
+            console.warn("[DevChat] Servidor sobrecarregado (status " + response.status + "), tentativa " + attempt + " de " + MAX_RETRIES);
+            var delay = RETRY_DELAY * Math.pow(2, attempt - 1); // backoff exponencial
+            if (btn) btn.innerHTML = "Tentando novamente (" + attempt + "/" + MAX_RETRIES + ")...";
+            setTimeout(function () {
+              sendWithRetry(attempt + 1);
+            }, delay);
+            return;
+          }
+          
+          // Qualquer outro status ou última tentativa: considerar sucesso de UX
+          console.log("[DevChat] Lead enviado com sucesso (status " + response.status + ")");
+          showSuccess(form);
+        })
+        .catch(function (error) {
+          clearTimeout(timeoutId);
+          
+          // Se for erro de rede ou timeout e ainda temos tentativas
+          if (attempt < MAX_RETRIES) {
+            console.warn("[DevChat] Erro ao enviar lead:", error.message, "- tentativa " + attempt + " de " + MAX_RETRIES);
+            var delay = RETRY_DELAY * Math.pow(2, attempt - 1);
+            if (btn) btn.innerHTML = "Tentando novamente (" + attempt + "/" + MAX_RETRIES + ")...";
+            setTimeout(function () {
+              sendWithRetry(attempt + 1);
+            }, delay);
+          } else {
+            // Última tentativa falhou: ainda mostra sucesso para UX (lead já foi salvo localmente)
+            console.error("[DevChat] Falha após " + MAX_RETRIES + " tentativas:", error.message);
+            console.log("[DevChat] Lead salvo localmente para sincronização posterior");
+            showSuccess(form);
+          }
+        });
       };
-      fetch(ENDPOINT, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      }).then(finish).catch(finish); // sucesso de UX mesmo se a leitura da resposta falhar
+      
+      sendWithRetry(1);
     });
   };
   document.querySelectorAll("[data-lead-form]").forEach(initLeadForm);
