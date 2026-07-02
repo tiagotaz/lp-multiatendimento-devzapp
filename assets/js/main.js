@@ -211,6 +211,19 @@
           // Disparar conversão só quando o webhook confirmar sucesso
           if (response.ok) {
             fire("Lead", { content_name: "teste_gratis", num_atendentes: atend }, "generate_lead");
+            
+            // Salvar no Supabase (não bloqueia o fluxo)
+            if (window.saveLeadToSupabase) {
+              window.saveLeadToSupabase(payload).then(function(result) {
+                if (result.success) {
+                  console.log("[DevChat] ✓ Lead salvo no Supabase");
+                } else {
+                  console.warn("[DevChat] ⚠️ Erro ao salvar no Supabase:", result.error);
+                }
+              }).catch(function(e) {
+                console.warn("[DevChat] ⚠️ Exceção ao salvar no Supabase:", e);
+              });
+            }
           }
           
           // Qualquer outro status ou última tentativa: considerar sucesso de UX

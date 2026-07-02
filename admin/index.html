@@ -43,6 +43,31 @@ header {
   padding: 30px;
   margin-bottom: 30px;
   box-shadow: var(--shadow-sm);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.header-content {
+  flex: 1;
+}
+
+.logout-btn {
+  padding: 10px 20px;
+  background: var(--slate-200);
+  color: var(--slate-700);
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.logout-btn:hover {
+  background: var(--slate-300);
 }
 
 h1 {
@@ -281,8 +306,11 @@ footer {
 <body>
 <div class="container">
   <header>
-    <h1>🔧 Admin - Páginas do Projeto</h1>
-    <p class="subtitle">Visão geral de todas as páginas, URLs e leads capturados do projeto DevChat</p>
+    <div class="header-content">
+      <h1>🔧 Admin - Páginas do Projeto</h1>
+      <p class="subtitle">Visão geral de todas as páginas, URLs e leads capturados do projeto DevChat</p>
+    </div>
+    <button class="logout-btn" id="logoutBtn" style="display:none;">Sair</button>
   </header>
 
   <div class="stats">
@@ -660,6 +688,143 @@ setInterval(() => {
   updateLeadStats();
   renderLeadsTable();
 }, 30000);
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/assets/js/supabase-config.js"></script>
+<script>
+// Autenticação e integração com Supabase
+(async function() {
+  // Verificar autenticação
+  if (!supabase) {
+    console.error('Supabase não está configurado');
+    return;
+  }
+
+  const { data: { session } } = await supabase.auth.getSession();
+  
+  if (!session) {
+    // Não autenticado, redirecionar para login
+    window.location.href = '/admin/login.html';
+    return;
+  }
+
+  // Usuário autenticado, mostrar botão de logout
+  const logoutBtn = document.getElementById('logoutBtn');
+  if (logoutBtn) {
+    logoutBtn.style.display = 'block';
+    logoutBtn.addEventListener('click', async () => {
+      await supabase.auth.signOut();
+      window.location.href = '/admin/login.html';
+    });
+  }
+
+  // Buscar leads do Supabase
+  async function updateLeadStatsFromSupabase() {
+    const result = await getLeadsFromSupabase(1000);
+    
+    if (!result.success) {
+      console.warn('[Admin] Erro ao buscar leads do Supabase:', result.error);
+      // Fallback para localStorage
+      return;
+    }
+
+    const leads = result.data;
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    
+    const leadsToday = leads.filter(l => new Date(l.created_at) >= today).length;
+    const leadsWeek = leads.filter(l => new Date(l.created_at) >= weekAgo).length;
+    const leadsMonth = leads.filter(l => new Date(l.created_at) >= monthStart).length;
+    
+    document.getElementById('totalLeads').textContent = leads.length;
+    document.getElementById('leadsToday').textContent = leadsToday;
+    document.getElementById('leadsWeek').textContent = leadsWeek;
+    document.getElementById('leadsMonth').textContent = leadsMonth;
+  }
+
+  async function renderLeadsTableFromSupabase() {
+    const result = await getLeadsFromSupabase(100);
+    const table = document.getElementById('leadsTable');
+    
+    if (!result.success) {
+      table.innerHTML = '<p style="color: var(--slate-500); text-align: center; padding: 20px;">Erro ao carregar leads do Supabase. ' + result.error + '</p>';
+      return;
+    }
+
+    const leads = result.data;
+    
+    if (leads.length === 0) {
+      table.innerHTML = '<p style="color: var(--slate-500); text-align: center; padding: 20px;">Nenhum lead capturado ainda.</p>';
+      return;
+    }
+    
+    const formatDate = (iso) => {
+      const d = new Date(iso);
+      return d.toLocaleString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    };
+    
+    const getUtmBadge = (lead) => {
+      if (!lead.utm_source) return '';
+      let color = '#6b7690';
+      if (lead.utm_source === 'google') color = '#4285f4';
+      if (lead.utm_source === 'facebook' || lead.utm_source === 'instagram') color = '#1877f2';
+      return `<span style="background: ${color}; color: white; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; text-transform: uppercase;">${lead.utm_source}</span>`;
+    };
+    
+    table.innerHTML = `
+      <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+          <thead>
+            <tr style="background: var(--bg-soft); text-align: left;">
+              <th style="padding: 12px; font-weight: 600; color: var(--slate-700);">Data/Hora</th>
+              <th style="padding: 12px; font-weight: 600; color: var(--slate-700);">Nome</th>
+              <th style="padding: 12px; font-weight: 600; color: var(--slate-700);">Email</th>
+              <th style="padding: 12px; font-weight: 600; color: var(--slate-700);">Telefone</th>
+              <th style="padding: 12px; font-weight: 600; color: var(--slate-700);">Atendentes</th>
+              <th style="padding: 12px; font-weight: 600; color: var(--slate-700);">Origem</th>
+              <th style="padding: 12px; font-weight: 600; color: var(--slate-700);">Página</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${leads.map(lead => `
+              <tr style="border-bottom: 1px solid var(--slate-200);">
+                <td style="padding: 12px; color: var(--slate-700);">${formatDate(lead.created_at)}</td>
+                <td style="padding: 12px; color: var(--slate-900); font-weight: 500;">${lead.nome}</td>
+                <td style="padding: 12px; color: var(--slate-700);">${lead.email}</td>
+                <td style="padding: 12px; color: var(--slate-700);">${lead.telefone}</td>
+                <td style="padding: 12px; color: var(--slate-700);">${lead.atendentes || '-'}</td>
+                <td style="padding: 12px;">${getUtmBadge(lead)}</td>
+                <td style="padding: 12px;">
+                  <code style="background: var(--bg-soft); padding: 4px 8px; border-radius: 4px; font-size: 12px; color: var(--purple-600);">${lead.pagina || '-'}</code>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+      ${leads.length === 100 ? '<p style="color: var(--slate-500); font-size: 13px; margin-top: 12px; text-align: center;">Mostrando os últimos 100 leads</p>' : ''}
+    `;
+  }
+
+  // Atualizar com dados do Supabase
+  await updateLeadStatsFromSupabase();
+  await renderLeadsTableFromSupabase();
+
+  // Atualizar a cada 30 segundos
+  setInterval(async () => {
+    await updateLeadStatsFromSupabase();
+    await renderLeadsTableFromSupabase();
+  }, 30000);
+})();
 </script>
 </body>
 </html>
