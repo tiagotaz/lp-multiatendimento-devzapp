@@ -20,11 +20,13 @@ if (typeof window !== 'undefined' && !window.supabaseClient) {
 var supabase = window.supabaseClient || null;
 
 // Função para salvar lead no Supabase
-async function saveLeadToSupabase(leadData) {
+window.saveLeadToSupabase = async function(leadData) {
   if (!supabase) {
     console.warn('[DevChat] Supabase client não disponível');
     return { success: false, error: 'Supabase client não disponível' };
   }
+
+  console.log('[DevChat] Tentando salvar lead no Supabase:', leadData);
 
   try {
     const { data, error } = await supabase
@@ -55,10 +57,10 @@ async function saveLeadToSupabase(leadData) {
     console.error('[DevChat] Exceção ao salvar lead no Supabase:', e);
     return { success: false, error: e.message };
   }
-}
+};
 
 // Função para buscar leads do Supabase
-async function getLeadsFromSupabase(limit = 100) {
+window.getLeadsFromSupabase = async function(limit = 100) {
   if (!supabase) {
     console.warn('[DevChat] Supabase client não disponível');
     return { success: false, error: 'Supabase client não disponível', data: [] };
@@ -81,4 +83,4 @@ async function getLeadsFromSupabase(limit = 100) {
     console.error('[DevChat] Exceção ao buscar leads do Supabase:', e);
     return { success: false, error: e.message, data: [] };
   }
-}
+};
