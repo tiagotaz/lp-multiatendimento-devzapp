@@ -1,9 +1,19 @@
 /* Configuração do Supabase para DevChat */
 const SUPABASE_URL = 'https://lhjyijzbutujfyfsnxil.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxoanlpanpidXR1amZ5ZnNueGlsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzU4NDY4MDAsImV4cCI6MjA1MTQyMjgwMH0.sb_publishable_aWQgG6mq2FijvHbLQnz2pA_cYW4YIKT';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxoanlpanpidXR1amZ5ZnNueGlsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzU4NDY4MDAsImV4cCI6MjA1MTQyMjgwMH0.aWQgG6mq2FijvHbLQnz2pA_cYW4YIKT';
 
 // Inicializar cliente Supabase
-const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+let supabase = null;
+if (typeof window !== 'undefined' && window.supabase) {
+  try {
+    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    console.log('[DevChat] Supabase client inicializado com sucesso');
+  } catch (e) {
+    console.error('[DevChat] Erro ao inicializar Supabase:', e);
+  }
+} else {
+  console.warn('[DevChat] Biblioteca Supabase não carregada');
+}
 
 // Função para salvar lead no Supabase
 async function saveLeadToSupabase(leadData) {
