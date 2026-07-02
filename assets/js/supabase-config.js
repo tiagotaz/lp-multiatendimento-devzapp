@@ -1,6 +1,6 @@
 /* Configuração do Supabase para DevChat */
 const SUPABASE_URL = 'https://lhjyijzbutujfyfsnxil.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxoanlpanpidXR1amZ5ZnNueGlsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzU4NDY4MDAsImV4cCI6MjA1MTQyMjgwMH0.aWQgG6mq2FijvHbLQnz2pA_cYW4YIKT';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxoanlpanpidXR1amZ5ZnNueGlsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3OTcwMDQsImV4cCI6MjA5NzM3MzAwNH0.5_lgRT0xPoVq43ZFjuwkRD2CenW8FI8wZOXC1abocT8';
 
 // Inicializar cliente Supabase
 let supabase = null;
