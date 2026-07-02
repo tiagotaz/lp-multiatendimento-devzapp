@@ -29,7 +29,7 @@ window.saveLeadToSupabase = async function(leadData) {
   console.log('[DevChat] Tentando salvar lead no Supabase:', leadData);
 
   try {
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('leads')
       .insert([{
         nome: leadData.nome,
@@ -43,16 +43,15 @@ window.saveLeadToSupabase = async function(leadData) {
         utm_term: leadData.utm_term || null,
         utm_content: leadData.utm_content || null,
         created_at: new Date().toISOString()
-      }])
-      .select();
+      }]);
 
     if (error) {
       console.error('[DevChat] Erro ao salvar lead no Supabase:', error);
       return { success: false, error: error.message };
     }
 
-    console.log('[DevChat] ✓ Lead salvo no Supabase:', data);
-    return { success: true, data: data };
+    console.log('[DevChat] ✓ Lead salvo no Supabase');
+    return { success: true };
   } catch (e) {
     console.error('[DevChat] Exceção ao salvar lead no Supabase:', e);
     return { success: false, error: e.message };
