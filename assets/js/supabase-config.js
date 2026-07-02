@@ -2,18 +2,22 @@
 const SUPABASE_URL = 'https://lhjyijzbutujfyfsnxil.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxoanlpanpidXR1amZ5ZnNueGlsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3OTcwMDQsImV4cCI6MjA5NzM3MzAwNH0.5_lgRT0xPoVq43ZFjuwkRD2CenW8FI8wZOXC1abocT8';
 
-// Inicializar cliente Supabase
-let supabase = null;
-if (typeof window !== 'undefined' && window.supabase) {
-  try {
-    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    console.log('[DevChat] Supabase client inicializado com sucesso');
-  } catch (e) {
-    console.error('[DevChat] Erro ao inicializar Supabase:', e);
+// Inicializar cliente Supabase (evitar redeclaração)
+if (typeof window !== 'undefined' && !window.supabaseClient) {
+  if (window.supabase) {
+    try {
+      window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      console.log('[DevChat] Supabase client inicializado com sucesso');
+    } catch (e) {
+      console.error('[DevChat] Erro ao inicializar Supabase:', e);
+    }
+  } else {
+    console.warn('[DevChat] Biblioteca Supabase não carregada');
   }
-} else {
-  console.warn('[DevChat] Biblioteca Supabase não carregada');
 }
+
+// Referência global para facilitar acesso
+var supabase = window.supabaseClient || null;
 
 // Função para salvar lead no Supabase
 async function saveLeadToSupabase(leadData) {
