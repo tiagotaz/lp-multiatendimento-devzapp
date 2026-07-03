@@ -86,15 +86,18 @@ window.getLeadsFromSupabase = async function(limit = 100) {
 
 // Função para salvar analytics no Supabase
 window.saveAnalyticsToSupabase = async function(analyticsData) {
-  if (!supabase) {
-    console.warn('[DevChat] Supabase client não disponível');
+  // Usar window.supabaseClient em vez de supabase
+  const client = window.supabaseClient || supabase;
+  
+  if (!client) {
+    console.warn('[DevChat] Supabase client não disponível para analytics');
     return { success: false, error: 'Supabase client não disponível' };
   }
 
   console.log('[DevChat] Salvando analytics no Supabase:', analyticsData);
 
   try {
-    const { error } = await supabase
+    const { error } = await client
       .from('user_analytics')
       .insert([{
         session_id: analyticsData.session_id,
@@ -126,13 +129,16 @@ window.saveAnalyticsToSupabase = async function(analyticsData) {
 
 // Função para buscar analytics do Supabase
 window.getAnalyticsFromSupabase = async function(filters = {}) {
-  if (!supabase) {
-    console.warn('[DevChat] Supabase client não disponível');
+  // Usar window.supabaseClient em vez de supabase
+  const client = window.supabaseClient || supabase;
+  
+  if (!client) {
+    console.warn('[DevChat] Supabase client não disponível para analytics');
     return { success: false, error: 'Supabase client não disponível', data: [] };
   }
 
   try {
-    let query = supabase
+    let query = client
       .from('user_analytics')
       .select('*')
       .order('created_at', { ascending: false });
