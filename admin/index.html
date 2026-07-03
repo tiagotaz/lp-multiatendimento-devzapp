@@ -914,6 +914,10 @@ window.copyToClipboard = copyToClipboard;
         document.getElementById('leadsToday').textContent = '0';
         document.getElementById('leadsWeek').textContent = '0';
         document.getElementById('leadsMonth').textContent = '0';
+        document.getElementById('trafficGoogle').textContent = '0';
+        document.getElementById('trafficFacebook').textContent = '0';
+        document.getElementById('trafficOrganic').textContent = '0';
+        document.getElementById('trafficOther').textContent = '0';
         return;
       }
 
@@ -931,6 +935,52 @@ window.copyToClipboard = copyToClipboard;
       document.getElementById('leadsToday').textContent = leadsToday;
       document.getElementById('leadsWeek').textContent = leadsWeek;
       document.getElementById('leadsMonth').textContent = leadsMonth;
+      
+      // Calcular fontes de tráfego a partir dos leads
+      updateTrafficSourcesFromLeads(leads);
+    }
+
+    // Função para calcular fontes de tráfego a partir dos leads
+    function updateTrafficSourcesFromLeads(leads) {
+      let googleCount = 0;
+      let facebookCount = 0;
+      let organicCount = 0;
+      let otherCount = 0;
+
+      leads.forEach(lead => {
+        // Extrair UTM source da URL ou campo utm_source
+        let utmSource = '';
+        
+        if (lead.utm_source) {
+          utmSource = lead.utm_source.toLowerCase();
+        } else if (lead.pagina) {
+          // Tentar extrair da URL
+          const urlMatch = lead.pagina.match(/utm_source=([^&]+)/);
+          if (urlMatch) {
+            utmSource = urlMatch[1].toLowerCase();
+          }
+        }
+
+        // Classificar por fonte
+        if (utmSource.includes('google') || utmSource.includes('gclid')) {
+          googleCount++;
+        } else if (utmSource.includes('fb') || utmSource.includes('facebook') || utmSource.includes('instagram') || utmSource.includes('ig')) {
+          facebookCount++;
+        } else if (utmSource === '' || utmSource === 'organic' || utmSource === 'organico') {
+          organicCount++;
+        } else if (utmSource !== '') {
+          otherCount++;
+        } else {
+          // Se não tem UTM nenhum, considerar orgânico
+          organicCount++;
+        }
+      });
+
+      // Atualizar os cards
+      document.getElementById('trafficGoogle').textContent = googleCount;
+      document.getElementById('trafficFacebook').textContent = facebookCount;
+      document.getElementById('trafficOrganic').textContent = organicCount;
+      document.getElementById('trafficOther').textContent = otherCount;
     }
 
     async function renderLeadsTableFromSupabase() {
