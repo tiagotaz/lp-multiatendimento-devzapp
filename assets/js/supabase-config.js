@@ -83,3 +83,83 @@ window.getLeadsFromSupabase = async function(limit = 100) {
     return { success: false, error: e.message, data: [] };
   }
 };
+
+// Função para salvar analytics no Supabase
+window.saveAnalyticsToSupabase = async function(analyticsData) {
+  if (!supabase) {
+    console.warn('[DevChat] Supabase client não disponível');
+    return { success: false, error: 'Supabase client não disponível' };
+  }
+
+  console.log('[DevChat] Salvando analytics no Supabase:', analyticsData);
+
+  try {
+    const { error } = await supabase
+      .from('user_analytics')
+      .insert([{
+        session_id: analyticsData.session_id,
+        page_url: analyticsData.page_url,
+        page_path: analyticsData.page_path,
+        events: analyticsData.events,
+        scroll_depth: analyticsData.scroll_depth,
+        sections_viewed: analyticsData.sections_viewed,
+        clicks: analyticsData.clicks,
+        time_on_page: analyticsData.time_on_page,
+        exit_intent: analyticsData.exit_intent,
+        viewport_width: analyticsData.viewport?.width,
+        viewport_height: analyticsData.viewport?.height,
+        created_at: new Date().toISOString()
+      }]);
+
+    if (error) {
+      console.error('[DevChat] Erro ao salvar analytics no Supabase:', error);
+      return { success: false, error: error.message };
+    }
+
+    console.log('[DevChat] ✓ Analytics salvo no Supabase');
+    return { success: true };
+  } catch (e) {
+    console.error('[DevChat] Exceção ao salvar analytics no Supabase:', e);
+    return { success: false, error: e.message };
+  }
+};
+
+// Função para buscar analytics do Supabase
+window.getAnalyticsFromSupabase = async function(filters = {}) {
+  if (!supabase) {
+    console.warn('[DevChat] Supabase client não disponível');
+    return { success: false, error: 'Supabase client não disponível', data: [] };
+  }
+
+  try {
+    let query = supabase
+      .from('user_analytics')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    // Aplicar filtros opcionais
+    if (filters.page_path) {
+      query = query.eq('page_path', filters.page_path);
+    }
+    if (filters.session_id) {
+      query = query.eq('session_id', filters.session_id);
+    }
+    if (filters.limit) {
+      query = query.limit(filters.limit);
+    } else {
+      query = query.limit(100);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error('[DevChat] Erro ao buscar analytics do Supabase:', error);
+      return { success: false, error: error.message, data: [] };
+    }
+
+    return { success: true, data: data || [] };
+  } catch (e) {
+    console.error('[DevChat] Exceção ao buscar analytics do Supabase:', e);
+    return { success: false, error: e.message, data: [] };
+  }
+};

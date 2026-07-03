@@ -1,8 +1,72 @@
-# Arquivos que NÃO sobem no contexto de build/deploy.
-# (O .dockerignore controla o que entra na imagem; este controla o upload ao Cloud Build.)
+# This file specifies files that are *not* uploaded to Google Cloud
+# using gcloud. It follows the same syntax as .gitignore, with the addition of
+# "#!include" directives (which insert the entries of the given .gitignore-style
+# file at that point).
+#
+# For more information, run:
+#   $ gcloud topic gcloudignore
+#
+.gcloudignore
+# If you would like to upload your .git directory, .gitignore file or files
+# from your .gitignore file, remove the corresponding line
+# below:
+.git
+.gitignore
+
+# Node.js dependencies:
+node_modules/
+
+# Python pycache:
+__pycache__/
+*.pyc
+
+# Ignored by the build system
+/setup.cfg
+
+# Development files
+*.log
+*.tmp
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Documentation (não necessário em produção)
+README.md
+README-ANALYTICS.md
+DEPLOY.md
+_build-spec.md
+ANALISE-CONCORRENTES.md
+INFORMACOES-SISTEMA.md
+PROXIMOS-PASSOS.md
+SUPABASE-SETUP.md
+
+# Git
 .git/
 .gitignore
-.DS_Store
-_modelo/
-partials/
-*.md
+
+# Environment files (nunca fazer deploy de secrets!)
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+secrets/
+
+# Test files
+test/
+tests/
+*.test.js
+*.spec.js
+
+# Build artifacts
+dist/
+build/
+coverage/
+
+# Backup files
+*.bak
+*.backup
+*~
