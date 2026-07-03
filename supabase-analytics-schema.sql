@@ -15,6 +15,11 @@ CREATE TABLE IF NOT EXISTS user_analytics (
   exit_intent BOOLEAN DEFAULT false,
   viewport_width INTEGER,
   viewport_height INTEGER,
+  utm_source TEXT,
+  utm_medium TEXT,
+  utm_campaign TEXT,
+  utm_term TEXT,
+  utm_content TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -24,6 +29,8 @@ CREATE INDEX IF NOT EXISTS idx_user_analytics_session_id ON user_analytics(sessi
 CREATE INDEX IF NOT EXISTS idx_user_analytics_page_path ON user_analytics(page_path);
 CREATE INDEX IF NOT EXISTS idx_user_analytics_created_at ON user_analytics(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_user_analytics_exit_intent ON user_analytics(exit_intent) WHERE exit_intent = true;
+CREATE INDEX IF NOT EXISTS idx_user_analytics_utm_source ON user_analytics(utm_source);
+CREATE INDEX IF NOT EXISTS idx_user_analytics_utm_medium ON user_analytics(utm_medium);
 
 -- Índice GIN para buscar dentro dos JSONBs
 CREATE INDEX IF NOT EXISTS idx_user_analytics_events ON user_analytics USING GIN (events);

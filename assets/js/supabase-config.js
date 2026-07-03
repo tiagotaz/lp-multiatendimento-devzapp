@@ -120,6 +120,11 @@ window.saveAnalyticsToSupabase = async function(analyticsData) {
         exit_intent: analyticsData.exit_intent,
         viewport_width: analyticsData.viewport?.width,
         viewport_height: analyticsData.viewport?.height,
+        utm_source: analyticsData.utm_source,
+        utm_medium: analyticsData.utm_medium,
+        utm_campaign: analyticsData.utm_campaign,
+        utm_term: analyticsData.utm_term,
+        utm_content: analyticsData.utm_content,
         created_at: new Date().toISOString()
       }]);
 

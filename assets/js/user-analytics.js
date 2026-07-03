@@ -101,6 +101,16 @@
 
   // Rastrear visualização de página
   function trackPageView() {
+    // Capturar UTMs da URL
+    var urlParams = new URLSearchParams(location.search);
+    var utms = {
+      utm_source: urlParams.get('utm_source') || '',
+      utm_medium: urlParams.get('utm_medium') || '',
+      utm_campaign: urlParams.get('utm_campaign') || '',
+      utm_term: urlParams.get('utm_term') || '',
+      utm_content: urlParams.get('utm_content') || '',
+    };
+
     var pageData = {
       url: location.href,
       path: location.pathname,
@@ -115,6 +125,7 @@
         width: screen.width,
         height: screen.height,
       },
+      utms: utms,
     };
 
     session.pageViews.push(pageData);
@@ -273,6 +284,10 @@
   function sendAnalyticsToServer() {
     if (!window.saveAnalyticsToSupabase) return;
 
+    // Capturar UTMs da última page view
+    var lastPageView = session.pageViews[session.pageViews.length - 1];
+    var utms = lastPageView?.utms || {};
+
     var analyticsData = {
       session_id: session.id,
       page_url: location.href,
@@ -287,6 +302,11 @@
         width: window.innerWidth,
         height: window.innerHeight,
       },
+      utm_source: utms.utm_source || null,
+      utm_medium: utms.utm_medium || null,
+      utm_campaign: utms.utm_campaign || null,
+      utm_term: utms.utm_term || null,
+      utm_content: utms.utm_content || null,
     };
 
     window.saveAnalyticsToSupabase(analyticsData).catch(function (e) {
