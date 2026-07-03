@@ -106,27 +106,32 @@ window.saveAnalyticsToSupabase = async function(analyticsData) {
   console.log('[DevChat] Salvando analytics no Supabase:', analyticsData);
 
   try {
+    // Construir objeto base (campos obrigatórios)
+    const analyticsRecord = {
+      session_id: analyticsData.session_id,
+      page_url: analyticsData.page_url,
+      page_path: analyticsData.page_path,
+      events: analyticsData.events,
+      scroll_depth: analyticsData.scroll_depth,
+      sections_viewed: analyticsData.sections_viewed,
+      clicks: analyticsData.clicks,
+      time_on_page: analyticsData.time_on_page,
+      exit_intent: analyticsData.exit_intent,
+      viewport_width: analyticsData.viewport?.width,
+      viewport_height: analyticsData.viewport?.height,
+      created_at: new Date().toISOString()
+    };
+
+    // Adicionar campos UTM apenas se existirem (campos opcionais)
+    if (analyticsData.utm_source) analyticsRecord.utm_source = analyticsData.utm_source;
+    if (analyticsData.utm_medium) analyticsRecord.utm_medium = analyticsData.utm_medium;
+    if (analyticsData.utm_campaign) analyticsRecord.utm_campaign = analyticsData.utm_campaign;
+    if (analyticsData.utm_term) analyticsRecord.utm_term = analyticsData.utm_term;
+    if (analyticsData.utm_content) analyticsRecord.utm_content = analyticsData.utm_content;
+
     const { error } = await client
       .from('user_analytics')
-      .insert([{
-        session_id: analyticsData.session_id,
-        page_url: analyticsData.page_url,
-        page_path: analyticsData.page_path,
-        events: analyticsData.events,
-        scroll_depth: analyticsData.scroll_depth,
-        sections_viewed: analyticsData.sections_viewed,
-        clicks: analyticsData.clicks,
-        time_on_page: analyticsData.time_on_page,
-        exit_intent: analyticsData.exit_intent,
-        viewport_width: analyticsData.viewport?.width,
-        viewport_height: analyticsData.viewport?.height,
-        utm_source: analyticsData.utm_source,
-        utm_medium: analyticsData.utm_medium,
-        utm_campaign: analyticsData.utm_campaign,
-        utm_term: analyticsData.utm_term,
-        utm_content: analyticsData.utm_content,
-        created_at: new Date().toISOString()
-      }]);
+      .insert([analyticsRecord]);
 
     if (error) {
       console.error('[DevChat] Erro ao salvar analytics no Supabase:', error);
