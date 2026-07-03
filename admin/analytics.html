@@ -247,6 +247,33 @@
     </div>
   </div>
 
+  <!-- Origem de Tráfego (UTMs) -->
+  <div class="section-card">
+    <h2>🎯 Origem de Tráfego</h2>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <h3>🔍 Google Ads</h3>
+        <p class="value" id="stat-google">-</p>
+        <p class="change">Sessões</p>
+      </div>
+      <div class="stat-card">
+        <h3>📘 Facebook Ads</h3>
+        <p class="value" id="stat-facebook">-</p>
+        <p class="change">Sessões</p>
+      </div>
+      <div class="stat-card">
+        <h3>🌐 Orgânico</h3>
+        <p class="value" id="stat-organic">-</p>
+        <p class="change">Sessões</p>
+      </div>
+      <div class="stat-card">
+        <h3>🔗 Outras Fontes</h3>
+        <p class="value" id="stat-other">-</p>
+        <p class="change">Sessões</p>
+      </div>
+    </div>
+  </div>
+
   <!-- Filtros -->
   <div class="section-card">
     <h2>Filtros</h2>
@@ -369,6 +396,9 @@
     document.getElementById('stat-avg-time').textContent = formatTime(avgTime);
     document.getElementById('stat-avg-scroll').textContent = Math.round(avgScroll) + '%';
     document.getElementById('stat-exit-intent').textContent = exitIntentRate + '%';
+
+    // Calcular origem de tráfego baseado em UTMs
+    calculateTrafficSources(data);
 
     // Renderizar seções
     renderSections(data);
@@ -532,6 +562,59 @@
       pages.map(p => `<option value="${p}">${p}</option>`).join('');
     
     if (currentValue) select.value = currentValue;
+  }
+
+  // Calcular origem de tráfego baseado em UTMs
+  function calculateTrafficSources(data) {
+    let google = 0;
+    let facebook = 0;
+    let organic = 0;
+    let other = 0;
+
+    // Agrupar por sessão para contar apenas uma vez por sessão
+    const sessions = {};
+    data.forEach(item => {
+      if (!sessions[item.session_id]) {
+        sessions[item.session_id] = item;
+      }
+    });
+
+    Object.values(sessions).forEach(item => {
+      // Tentar extrair UTMs dos eventos
+      let utmSource = '';
+      let utmMedium = '';
+      
+      if (item.events && Array.isArray(item.events)) {
+        const pageViewEvent = item.events.find(e => e.type === 'page_view');
+        if (pageViewEvent && pageViewEvent.data) {
+          // Extrair UTMs da URL se disponível
+          try {
+            const url = new URL(item.page_url);
+            utmSource = url.searchParams.get('utm_source') || '';
+            utmMedium = url.searchParams.get('utm_medium') || '';
+          } catch (e) {}
+        }
+      }
+
+      // Classificar origem
+      const source = utmSource.toLowerCase();
+      const medium = utmMedium.toLowerCase();
+
+      if (source.includes('google') || medium.includes('cpc') || medium.includes('ppc') || source.includes('adwords')) {
+        google++;
+      } else if (source.includes('facebook') || source.includes('fb') || source.includes('instagram') || source.includes('ig')) {
+        facebook++;
+      } else if (!utmSource && !utmMedium) {
+        organic++;
+      } else {
+        other++;
+      }
+    });
+
+    document.getElementById('stat-google').textContent = google;
+    document.getElementById('stat-facebook').textContent = facebook;
+    document.getElementById('stat-organic').textContent = organic;
+    document.getElementById('stat-other').textContent = other;
   }
 
   // Exportar dados
