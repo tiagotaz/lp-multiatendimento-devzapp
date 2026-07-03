@@ -947,33 +947,49 @@ window.copyToClipboard = copyToClipboard;
       let organicCount = 0;
       let otherCount = 0;
 
+      console.log('[Admin] Calculando fontes de tráfego de', leads.length, 'leads');
+
       leads.forEach(lead => {
         // Extrair UTM source da URL ou campo utm_source
         let utmSource = '';
         
         if (lead.utm_source) {
-          utmSource = lead.utm_source.toLowerCase();
+          utmSource = lead.utm_source.toLowerCase().trim();
         } else if (lead.pagina) {
           // Tentar extrair da URL
           const urlMatch = lead.pagina.match(/utm_source=([^&]+)/);
           if (urlMatch) {
-            utmSource = urlMatch[1].toLowerCase();
+            utmSource = urlMatch[1].toLowerCase().trim();
           }
         }
+
+        console.log('[Admin] Lead:', lead.nome, '| utm_source:', utmSource, '| pagina:', lead.pagina);
 
         // Classificar por fonte
         if (utmSource.includes('google') || utmSource.includes('gclid')) {
           googleCount++;
+          console.log('  -> Google');
         } else if (utmSource.includes('fb') || utmSource.includes('facebook') || utmSource.includes('instagram') || utmSource.includes('ig')) {
           facebookCount++;
+          console.log('  -> Facebook');
         } else if (utmSource === '' || utmSource === 'organic' || utmSource === 'organico') {
           organicCount++;
+          console.log('  -> Orgânico');
         } else if (utmSource !== '') {
           otherCount++;
+          console.log('  -> Outro:', utmSource);
         } else {
           // Se não tem UTM nenhum, considerar orgânico
           organicCount++;
+          console.log('  -> Orgânico (sem UTM)');
         }
+      });
+
+      console.log('[Admin] Resultado:', {
+        google: googleCount,
+        facebook: facebookCount,
+        organic: organicCount,
+        other: otherCount
       });
 
       // Atualizar os cards
