@@ -274,6 +274,28 @@
     </div>
   </div>
 
+  <!-- Top UTMs -->
+  <div class="section-card">
+    <h2>🏆 Principais Campanhas (UTMs)</h2>
+    <div class="table-container">
+      <table id="utm-table">
+        <thead>
+          <tr>
+            <th>Origem (Source)</th>
+            <th>Meio (Medium)</th>
+            <th>Campanha</th>
+            <th>Sessões</th>
+            <th>Tempo Médio</th>
+            <th>Scroll Médio</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td colspan="6" class="loading">Carregando dados...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
   <!-- Filtros -->
   <div class="section-card">
     <h2>Filtros</h2>
@@ -580,29 +602,14 @@
     });
 
     Object.values(sessions).forEach(item => {
-      // Tentar extrair UTMs dos eventos
-      let utmSource = '';
-      let utmMedium = '';
-      
-      if (item.events && Array.isArray(item.events)) {
-        const pageViewEvent = item.events.find(e => e.type === 'page_view');
-        if (pageViewEvent && pageViewEvent.data) {
-          // Extrair UTMs da URL se disponível
-          try {
-            const url = new URL(item.page_url);
-            utmSource = url.searchParams.get('utm_source') || '';
-            utmMedium = url.searchParams.get('utm_medium') || '';
-          } catch (e) {}
-        }
-      }
+      // Usar UTMs diretos da tabela
+      const utmSource = (item.utm_source || '').toLowerCase();
+      const utmMedium = (item.utm_medium || '').toLowerCase();
 
       // Classificar origem
-      const source = utmSource.toLowerCase();
-      const medium = utmMedium.toLowerCase();
-
-      if (source.includes('google') || medium.includes('cpc') || medium.includes('ppc') || source.includes('adwords')) {
+      if (utmSource.includes('google') || utmMedium.includes('cpc') || utmMedium.includes('ppc') || utmSource.includes('adwords')) {
         google++;
-      } else if (source.includes('facebook') || source.includes('fb') || source.includes('instagram') || source.includes('ig')) {
+      } else if (utmSource.includes('facebook') || utmSource.includes('fb') || utmSource.includes('instagram') || utmSource.includes('ig')) {
         facebook++;
       } else if (!utmSource && !utmMedium) {
         organic++;
@@ -615,6 +622,65 @@
     document.getElementById('stat-facebook').textContent = facebook;
     document.getElementById('stat-organic').textContent = organic;
     document.getElementById('stat-other').textContent = other;
+
+    // Renderizar tabela de UTMs
+    renderUTMTable(data);
+  }
+
+  // Renderizar tabela de principais UTMs
+  function renderUTMTable(data) {
+    // Agrupar por combinação de UTMs
+    const utmGroups = {};
+    
+    data.forEach(item => {
+      const source = item.utm_source || '(direto)';
+      const medium = item.utm_medium || '(nenhum)';
+      const campaign = item.utm_campaign || '(não definida)';
+      const key = `${source}|${medium}|${campaign}`;
+      
+      if (!utmGroups[key]) {
+        utmGroups[key] = {
+          source,
+          medium,
+          campaign,
+          sessions: new Set(),
+          totalTime: 0,
+          totalScroll: 0,
+          count: 0
+        };
+      }
+      
+      utmGroups[key].sessions.add(item.session_id);
+      utmGroups[key].totalTime += item.time_on_page || 0;
+      utmGroups[key].totalScroll += item.scroll_depth || 0;
+      utmGroups[key].count++;
+    });
+
+    // Converter para array e ordenar por número de sessões
+    const utmArray = Object.values(utmGroups).map(group => ({
+      source: group.source,
+      medium: group.medium,
+      campaign: group.campaign,
+      sessions: group.sessions.size,
+      avgTime: group.totalTime / group.count,
+      avgScroll: group.totalScroll / group.count
+    })).sort((a, b) => b.sessions - a.sessions);
+
+    // Pegar top 20
+    const topUTMs = utmArray.slice(0, 20);
+
+    const html = topUTMs.map(utm => `
+      <tr>
+        <td><strong>${utm.source}</strong></td>
+        <td>${utm.medium}</td>
+        <td>${utm.campaign}</td>
+        <td>${utm.sessions}</td>
+        <td>${formatTime(utm.avgTime)}</td>
+        <td>${Math.round(utm.avgScroll)}%</td>
+      </tr>
+    `).join('');
+
+    document.querySelector('#utm-table tbody').innerHTML = html || '<tr><td colspan="6" class="empty-state">Nenhum dado de UTM disponível</td></tr>';
   }
 
   // Exportar dados
