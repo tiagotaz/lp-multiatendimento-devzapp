@@ -850,7 +850,16 @@
 
   // Carregar ao iniciar
   document.addEventListener('DOMContentLoaded', function() {
-    // Não definir datas padrão - deixar vazio para mostrar todos os dados
+    // Definir data de hoje nos filtros (GMT-3)
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    const todayStr = `${year}-${month}-${day}`;
+    
+    document.getElementById('filter-date-start').value = todayStr;
+    document.getElementById('filter-date-end').value = todayStr;
+    
     loadAnalytics();
 
     // Recarregar a cada 30 segundos
