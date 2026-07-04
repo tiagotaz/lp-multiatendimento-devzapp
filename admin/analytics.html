@@ -632,32 +632,44 @@
     document.querySelector('#pages-table tbody').innerHTML = html || '<tr><td colspan="5" class="empty-state">Nenhum dado disponível</td></tr>';
   }
 
-  // Renderizar eventos
+  // Renderizar eventos recentes (registros da tabela user_analytics)
   function renderEvents(data) {
-    const allEvents = [];
-    data.forEach(item => {
-      if (item.events && Array.isArray(item.events)) {
-        item.events.forEach(event => {
-          allEvents.push({
-            ...event,
-            page_path: item.page_path,
-            created_at: item.created_at  // Adicionar created_at do registro
-          });
+    // Ordenar por created_at mais recente
+    const sortedData = [...data].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    const recentRecords = sortedData.slice(0, 50);
+
+    const html = recentRecords.map(record => {
+      // Contar quantos eventos tem no array
+      const eventCount = (record.events && Array.isArray(record.events)) ? record.events.length : 0;
+      
+      // Pegar tipos de eventos únicos
+      const eventTypes = [];
+      if (record.events && Array.isArray(record.events)) {
+        record.events.forEach(e => {
+          if (e.type && !eventTypes.includes(e.type)) {
+            eventTypes.push(e.type);
+          }
         });
       }
-    });
-
-    allEvents.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-    const recentEvents = allEvents.slice(0, 50);
-
-    const html = recentEvents.map(e => `
-      <tr>
-        <td><strong>${e.type}</strong></td>
-        <td>${e.page_path}</td>
-        <td>${JSON.stringify(e.data).substring(0, 100)}...</td>
-        <td>${formatDate(e.created_at)}</td>
-      </tr>
-    `).join('');
+      
+      const eventTypesStr = eventTypes.length > 0 ? eventTypes.join(', ') : 'session';
+      
+      // Informações adicionais
+      const info = [];
+      if (record.time_on_page) info.push(`${formatTime(record.time_on_page)} na página`);
+      if (record.scroll_depth) info.push(`${record.scroll_depth}% scroll`);
+      if (record.exit_intent) info.push('exit intent');
+      const infoStr = info.length > 0 ? info.join(' • ') : `${eventCount} eventos`;
+      
+      return `
+        <tr>
+          <td><strong>${eventTypesStr}</strong></td>
+          <td>${record.page_path}</td>
+          <td>${infoStr}</td>
+          <td>${formatDate(record.created_at)}</td>
+        </tr>
+      `;
+    }).join('');
 
     document.querySelector('#events-table tbody').innerHTML = html || '<tr><td colspan="4" class="empty-state">Nenhum evento disponível</td></tr>';
   }
