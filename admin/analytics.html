@@ -223,6 +223,20 @@
     <p>Análise detalhada do comportamento dos usuários no site (similar ao Microsoft Clarity)</p>
   </div>
 
+  <!-- Filtros (movido para o topo) -->
+  <div class="section-card">
+    <h2>🔍 Filtros</h2>
+    <div class="filters">
+      <select id="filter-page">
+        <option value="">Todas as páginas</option>
+      </select>
+      <input type="date" id="filter-date-start" placeholder="Data início" />
+      <input type="date" id="filter-date-end" placeholder="Data fim" />
+      <button onclick="loadAnalytics()">Aplicar Filtros</button>
+      <button onclick="exportData()" style="background: #10b981;">Exportar CSV</button>
+    </div>
+  </div>
+
   <!-- Estatísticas Gerais -->
   <div class="stats-grid">
     <div class="stat-card">
@@ -293,20 +307,6 @@
           <tr><td colspan="6" class="loading">Carregando dados...</td></tr>
         </tbody>
       </table>
-    </div>
-  </div>
-
-  <!-- Filtros -->
-  <div class="section-card">
-    <h2>Filtros</h2>
-    <div class="filters">
-      <select id="filter-page">
-        <option value="">Todas as páginas</option>
-      </select>
-      <input type="date" id="filter-date-start" />
-      <input type="date" id="filter-date-end" />
-      <button onclick="loadAnalytics()">Aplicar Filtros</button>
-      <button onclick="exportData()" style="background: #10b981;">Exportar CSV</button>
     </div>
   </div>
 
@@ -395,7 +395,7 @@
 
     const filters = {};
     if (pagePath) filters.page_path = pagePath;
-    if (dateStart || dateEnd) filters.limit = 1000;
+    filters.limit = 1000; // Sempre buscar mais dados para aplicar filtros de data
 
     const result = await window.getAnalyticsFromSupabase(filters);
     
@@ -404,8 +404,22 @@
       return;
     }
 
-    const data = result.data;
-    console.log('Analytics carregados:', data);
+    let data = result.data;
+    console.log('Analytics carregados (antes do filtro de data):', data.length, 'registros');
+
+    // Aplicar filtros de data no lado do cliente
+    if (dateStart || dateEnd) {
+      data = data.filter(item => {
+        const itemDate = new Date(item.created_at);
+        const start = dateStart ? new Date(dateStart + 'T00:00:00') : null;
+        const end = dateEnd ? new Date(dateEnd + 'T23:59:59') : null;
+        
+        if (start && itemDate < start) return false;
+        if (end && itemDate > end) return false;
+        return true;
+      });
+      console.log('Após filtro de data:', data.length, 'registros');
+    }
 
     // Calcular estatísticas
     const uniqueSessions = new Set(data.map(d => d.session_id)).size;
