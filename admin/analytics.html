@@ -683,10 +683,21 @@
       const pageUrl = (item.page_url || '').toLowerCase();
       
       // Verificar se tem gclid na URL (Google Ads)
-      const hasGclid = pageUrl.includes('gclid=');
+      let hasGclid = pageUrl.includes('gclid=');
       
       // Verificar se tem fbclid na URL (Facebook Ads)
-      const hasFbclid = pageUrl.includes('fbclid=');
+      let hasFbclid = pageUrl.includes('fbclid=');
+      
+      // Verificar também nos eventos (page_view)
+      if (item.events && Array.isArray(item.events)) {
+        item.events.forEach(event => {
+          if (event.type === 'page_view' && event.data && event.data.url) {
+            const eventUrl = event.data.url.toLowerCase();
+            if (eventUrl.includes('gclid=')) hasGclid = true;
+            if (eventUrl.includes('fbclid=')) hasFbclid = true;
+          }
+        });
+      }
 
       // Classificar origem
       if (hasGclid || utmSource.includes('google') || utmMedium.includes('cpc') || utmMedium.includes('ppc') || utmSource.includes('adwords')) {
