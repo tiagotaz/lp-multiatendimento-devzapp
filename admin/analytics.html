@@ -233,6 +233,7 @@
       <input type="date" id="filter-date-start" placeholder="Data início" />
       <input type="date" id="filter-date-end" placeholder="Data fim" />
       <button onclick="loadAnalytics()">Aplicar Filtros</button>
+      <button onclick="clearFilters()" style="background: #ef4444;">Limpar Filtros</button>
       <button onclick="exportData()" style="background: #10b981;">Exportar CSV</button>
     </div>
   </div>
@@ -412,27 +413,27 @@
       console.log('Aplicando filtro de data:', { dateStart, dateEnd });
       data = data.filter(item => {
         if (!item.created_at) {
-          console.log('Item sem created_at:', item);
           return false;
         }
         
+        // Converter UTC para timezone local (GMT-3)
         const itemDate = new Date(item.created_at);
-        const start = dateStart ? new Date(dateStart + 'T00:00:00') : null;
-        const end = dateEnd ? new Date(dateEnd + 'T23:59:59') : null;
         
-        console.log('Comparando:', {
-          item: item.created_at,
-          itemDate: itemDate.toISOString(),
-          start: start?.toISOString(),
-          end: end?.toISOString()
-        });
+        // Obter data local em formato YYYY-MM-DD
+        const year = itemDate.getFullYear();
+        const month = String(itemDate.getMonth() + 1).padStart(2, '0');
+        const day = String(itemDate.getDate()).padStart(2, '0');
+        const itemDateStr = `${year}-${month}-${day}`;
         
-        if (start && itemDate < start) {
-          console.log('  -> Rejeitado: antes do início');
+        console.log('Item:', item.created_at, '-> Local:', itemDateStr);
+        
+        // Comparar strings de data (YYYY-MM-DD)
+        if (dateStart && itemDateStr < dateStart) {
+          console.log('  -> Rejeitado: antes de', dateStart);
           return false;
         }
-        if (end && itemDate > end) {
-          console.log('  -> Rejeitado: depois do fim');
+        if (dateEnd && itemDateStr > dateEnd) {
+          console.log('  -> Rejeitado: depois de', dateEnd);
           return false;
         }
         console.log('  -> Aceito');
@@ -810,6 +811,14 @@
     document.querySelector('#utm-table tbody').innerHTML = html || '<tr><td colspan="6" class="empty-state">Nenhum dado de UTM disponível</td></tr>';
   }
 
+  // Limpar filtros
+  function clearFilters() {
+    document.getElementById('filter-page').value = '';
+    document.getElementById('filter-date-start').value = '';
+    document.getElementById('filter-date-end').value = '';
+    loadAnalytics();
+  }
+
   // Exportar dados
   function exportData() {
     // Implementar exportação CSV
@@ -818,13 +827,7 @@
 
   // Carregar ao iniciar
   document.addEventListener('DOMContentLoaded', function() {
-    // Definir datas padrão (últimos 7 dias)
-    const today = new Date();
-    const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
-    
-    document.getElementById('filter-date-end').valueAsDate = today;
-    document.getElementById('filter-date-start').valueAsDate = weekAgo;
-
+    // Não definir datas padrão - deixar vazio para mostrar todos os dados
     loadAnalytics();
 
     // Recarregar a cada 30 segundos
