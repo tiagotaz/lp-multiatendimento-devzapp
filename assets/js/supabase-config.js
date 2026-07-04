@@ -107,6 +107,7 @@ window.saveAnalyticsToSupabase = async function(analyticsData) {
 
   try {
     // Construir objeto base (campos obrigatórios)
+    // Nota: created_at não é incluído - Supabase usa NOW() no servidor (UTC)
     const analyticsRecord = {
       session_id: analyticsData.session_id,
       page_url: analyticsData.page_url,
@@ -118,8 +119,7 @@ window.saveAnalyticsToSupabase = async function(analyticsData) {
       time_on_page: analyticsData.time_on_page,
       exit_intent: analyticsData.exit_intent,
       viewport_width: analyticsData.viewport?.width,
-      viewport_height: analyticsData.viewport?.height,
-      created_at: new Date().toISOString()
+      viewport_height: analyticsData.viewport?.height
     };
 
     // Adicionar campos UTM apenas se existirem (campos opcionais)
