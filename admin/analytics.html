@@ -442,6 +442,15 @@
 
   // Renderizar tempo por seção
   function renderSections(data) {
+    const pagePath = document.getElementById('filter-page').value;
+    
+    // Se uma página específica foi selecionada, mostrar sessões individuais
+    if (pagePath) {
+      renderSessionsTimeline(data);
+      return;
+    }
+    
+    // Caso contrário, mostrar agregado por seção
     const sectionsMap = {};
     
     data.forEach(item => {
@@ -472,6 +481,72 @@
     `).join('') : '<div class="empty-state">Nenhum dado de seção disponível</div>';
 
     document.getElementById('sections-chart').innerHTML = html;
+  }
+
+  // Renderizar timeline de sessões individuais
+  function renderSessionsTimeline(data) {
+    // Ordenar por data de criação (ordem cronológica)
+    const sessions = data.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+    
+    const html = sessions.length > 0 ? sessions.map((session, index) => {
+      const sectionsViewed = session.sections_viewed || {};
+      const sectionsList = Object.keys(sectionsViewed);
+      const lastSection = sectionsList[sectionsList.length - 1] || 'Desconhecida';
+      const exitIntent = session.exit_intent ? '🚪 Saiu' : '✅ Navegou';
+      
+      return `
+        <div class="session-item" style="padding: 16px; border: 1px solid #e4e8f1; border-radius: 12px; margin-bottom: 12px; background: ${session.exit_intent ? '#fff5f5' : '#f7f8fc'};">
+          <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+            <div>
+              <strong style="font-size: 14px; color: #1a2238;">Sessão #${index + 1}</strong>
+              <div style="font-size: 12px; color: #6b7690; margin-top: 4px;">${formatDate(session.created_at)}</div>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-size: 13px; font-weight: 600; color: ${session.exit_intent ? '#e5484d' : '#10c684'};">${exitIntent}</div>
+              <div style="font-size: 12px; color: #6b7690; margin-top: 2px;">Tempo: ${formatTime(session.time_on_page || 0)}</div>
+            </div>
+          </div>
+          
+          <div style="margin-bottom: 8px;">
+            <div style="font-size: 12px; color: #6b7690; margin-bottom: 6px;">Seções visitadas (${sectionsList.length}):</div>
+            <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+              ${sectionsList.map((section, idx) => `
+                <span style="background: ${idx === sectionsList.length - 1 ? '#fef3c7' : '#e9e3ff'}; color: ${idx === sectionsList.length - 1 ? '#92400e' : '#5a30e0'}; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600;">
+                  ${section} ${idx === sectionsList.length - 1 ? '← Última' : ''}
+                </span>
+              `).join('')}
+            </div>
+          </div>
+          
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; font-size: 12px;">
+            <div>
+              <span style="color: #6b7690;">Scroll:</span>
+              <strong style="color: #1a2238; margin-left: 4px;">${Math.round(session.scroll_depth || 0)}%</strong>
+            </div>
+            <div>
+              <span style="color: #6b7690;">Cliques:</span>
+              <strong style="color: #1a2238; margin-left: 4px;">${(session.clicks || []).length}</strong>
+            </div>
+            <div>
+              <span style="color: #6b7690;">Última seção:</span>
+              <strong style="color: #1a2238; margin-left: 4px;">${lastSection}</strong>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('') : '<div class="empty-state">Nenhuma sessão disponível</div>';
+
+    document.getElementById('sections-chart').innerHTML = `
+      <div style="margin-bottom: 16px;">
+        <h4 style="font-size: 15px; font-weight: 700; color: #1a2238; margin-bottom: 8px;">
+          📊 Timeline de Sessões (${sessions.length} sessões)
+        </h4>
+        <p style="font-size: 13px; color: #6b7690;">
+          Sessões ordenadas cronologicamente. A última seção visitada indica onde o usuário parou.
+        </p>
+      </div>
+      ${html}
+    `;
   }
 
   // Renderizar tabela de páginas
@@ -605,11 +680,18 @@
       // Usar UTMs diretos da tabela
       const utmSource = (item.utm_source || '').toLowerCase();
       const utmMedium = (item.utm_medium || '').toLowerCase();
+      const pageUrl = (item.page_url || '').toLowerCase();
+      
+      // Verificar se tem gclid na URL (Google Ads)
+      const hasGclid = pageUrl.includes('gclid=');
+      
+      // Verificar se tem fbclid na URL (Facebook Ads)
+      const hasFbclid = pageUrl.includes('fbclid=');
 
       // Classificar origem
-      if (utmSource.includes('google') || utmMedium.includes('cpc') || utmMedium.includes('ppc') || utmSource.includes('adwords')) {
+      if (hasGclid || utmSource.includes('google') || utmMedium.includes('cpc') || utmMedium.includes('ppc') || utmSource.includes('adwords')) {
         google++;
-      } else if (utmSource.includes('facebook') || utmSource.includes('fb') || utmSource.includes('instagram') || utmSource.includes('ig')) {
+      } else if (hasFbclid || utmSource.includes('facebook') || utmSource.includes('fb') || utmSource.includes('instagram') || utmSource.includes('ig')) {
         facebook++;
       } else if (!utmSource && !utmMedium) {
         organic++;
