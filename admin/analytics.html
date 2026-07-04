@@ -409,13 +409,33 @@
 
     // Aplicar filtros de data no lado do cliente
     if (dateStart || dateEnd) {
+      console.log('Aplicando filtro de data:', { dateStart, dateEnd });
       data = data.filter(item => {
+        if (!item.created_at) {
+          console.log('Item sem created_at:', item);
+          return false;
+        }
+        
         const itemDate = new Date(item.created_at);
         const start = dateStart ? new Date(dateStart + 'T00:00:00') : null;
         const end = dateEnd ? new Date(dateEnd + 'T23:59:59') : null;
         
-        if (start && itemDate < start) return false;
-        if (end && itemDate > end) return false;
+        console.log('Comparando:', {
+          item: item.created_at,
+          itemDate: itemDate.toISOString(),
+          start: start?.toISOString(),
+          end: end?.toISOString()
+        });
+        
+        if (start && itemDate < start) {
+          console.log('  -> Rejeitado: antes do início');
+          return false;
+        }
+        if (end && itemDate > end) {
+          console.log('  -> Rejeitado: depois do fim');
+          return false;
+        }
+        console.log('  -> Aceito');
         return true;
       });
       console.log('Após filtro de data:', data.length, 'registros');
