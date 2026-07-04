@@ -356,6 +356,7 @@
       <table id="events-table">
         <thead>
           <tr>
+            <th>ID</th>
             <th>Tipo</th>
             <th>Página</th>
             <th>Dados</th>
@@ -363,7 +364,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr><td colspan="4" class="loading">Carregando dados...</td></tr>
+          <tr><td colspan="5" class="loading">Carregando dados...</td></tr>
         </tbody>
       </table>
     </div>
@@ -663,6 +664,7 @@
       
       return `
         <tr>
+          <td><small>#${record.id}</small></td>
           <td><strong>${eventTypesStr}</strong></td>
           <td>${record.page_path}</td>
           <td>${infoStr}</td>
@@ -671,7 +673,7 @@
       `;
     }).join('');
 
-    document.querySelector('#events-table tbody').innerHTML = html || '<tr><td colspan="4" class="empty-state">Nenhum evento disponível</td></tr>';
+    document.querySelector('#events-table tbody').innerHTML = html || '<tr><td colspan="5" class="empty-state">Nenhum evento disponível</td></tr>';
   }
 
   // Renderizar heatmap
