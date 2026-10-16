@@ -49,7 +49,16 @@
       "@type": "Organization",
       "@id": "https://multiatendimento.devzapp.com.br/#organization",
       "name": "DevChat",
+      "alternateName": [
+        "DevChat by DevZapp",
+        "DevChat Multiatendimento"
+      ],
       "url": "https://multiatendimento.devzapp.com.br/",
+      "parentOrganization": {
+        "@type": "Organization",
+        "name": "DevZapp",
+        "url": "https://devzapp.com.br/"
+      },
       "logo": "https://multiatendimento.devzapp.com.br/assets/img/logo-devchat.svg",
       "description": "DevChat é uma plataforma de multiatendimento para WhatsApp com API oficial, CRM Kanban e preço por empresa.",
       "areaServed": "BR"
@@ -58,9 +67,10 @@
       "@type": "SoftwareApplication",
       "@id": "https://multiatendimento.devzapp.com.br/#software",
       "name": "DevChat",
+      "alternateName": "DevChat Multiatendimento para WhatsApp",
       "applicationCategory": "BusinessApplication",
       "operatingSystem": "Web, Android, iOS",
-      "description": "Multiatendimento no WhatsApp com vários atendentes no mesmo número, distribuição automática, URA, CRM Kanban, dashboards e relatórios.",
+      "description": "DevChat é uma plataforma de multiatendimento para WhatsApp, da DevZapp: vários atendentes no mesmo número, distribuição automática, URA, CRM Kanban, dashboards e relatórios. Funciona com a WhatsApp Business Platform (API oficial da Meta).",
       "publisher": {
         "@id": "https://multiatendimento.devzapp.com.br/#organization"
       },
@@ -205,7 +215,7 @@
         <nav class="crumbs" aria-label="Você está em"><a href="/">Início</a><span aria-hidden="true">/</span><a href="/#recursos">Recursos</a><span aria-hidden="true">/</span><span aria-current="page">URA e chatbot</span></nav>
         <span class="eyebrow">URA e chatbot no WhatsApp</span>
         <h1 class="h1--md">URA no WhatsApp: o cliente é <span class="text-grad">recebido e encaminhado na hora</span></h1>
-        <p class="hero__sub">Menu de opções, boas-vindas e horários de atendimento que trabalham sozinhos e entregam a conversa para o setor certo.</p>
+        <p class="hero__sub">A URA do DevChat, plataforma de multiatendimento para WhatsApp da DevZapp, recebe o cliente com um menu de opções, envia a mensagem de boas-vindas e encaminha a conversa para o departamento certo. É configurada sem programação e funciona por regras, sem IA.</p>
         <div class="hero__cta">
           <a href="#" class="btn btn--primary btn--lg">Testar grátis por 7 dias <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
           <a href="#como-funciona" class="btn btn--ghost btn--lg"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M10 8l6 4-6 4z" fill="currentColor"/></svg> Ver como funciona</a>
@@ -232,8 +242,8 @@
   <div class="container">
     <div class="sec-head center reveal">
       <span class="eyebrow">Como funciona</span>
-      <h2 class="h-sec">O cliente é recebido e encaminhado <span class="text-grad">antes de um humano entrar</span></h2>
-      
+      <h2 class="h-sec">Como funciona a URA <span class="text-grad">no WhatsApp</span>?</h2>
+      <p class="lead"><strong>A URA recebe o cliente com um menu de opções e encaminha a conversa para o departamento escolhido, antes de um atendente entrar.</strong></p>
     </div>
     <div class="split">
       <div class="split__media reveal">
@@ -258,8 +268,8 @@
   <div class="container">
     <div class="sec-head center reveal">
       <span class="eyebrow">Resultado</span>
-      <h2 class="h-sec">Menos trabalho repetido, <span class="text-grad">resposta mais rápida</span></h2>
-      
+      <h2 class="h-sec">O que a URA resolve <span class="text-grad">no dia a dia</span>?</h2>
+      <p class="lead"><strong>Menos trabalho repetido, cliente no setor certo e aviso automático fora do horário.</strong></p>
     </div>
     <div class="features">
       <article class="feature reveal">
@@ -300,8 +310,8 @@
   <div class="container">
     <div class="sec-head center reveal">
       <span class="eyebrow">Outros recursos</span>
-      <h2 class="h-sec">Tudo conectado na <span class="text-grad">mesma plataforma</span></h2>
-      
+      <h2 class="h-sec">Que outros recursos o <span class="text-grad">DevChat</span> tem?</h2>
+      <p class="lead"><strong>Multiatendimento, CRM, URA e relatórios funcionam juntos, na mesma plataforma.</strong></p>
     </div>
     <div class="features">
       <a href="/recursos/multiatendimento/" class="feature reveal">
@@ -327,8 +337,8 @@
   <div class="container">
     <div class="sec-head center reveal">
       <span class="eyebrow">Planos</span>
-      <h2 class="h-sec">Comece hoje, <span class="text-grad">com 7 dias grátis</span></h2>
-      <p class="lead">Preço por empresa, não por usuário. Sem fidelidade. Teste grátis por 7 dias.</p>
+      <h2 class="h-sec">Quanto custa o <span class="text-grad">DevChat</span>?</h2>
+      <p class="lead"><strong>De R$178 a R$750 por mês, por empresa: 2, 4 ou 10 atendentes, com 7 dias grátis e sem fidelidade.</strong></p>
     </div>
     <div class="plans">
       <article class="plan reveal">
@@ -380,8 +390,25 @@
     <p class="price-note">Precisa de mais operadores? <a href="https://wa.me/" style="color:var(--purple-600);font-weight:700">Fale com um especialista</a>. Pagamento no cartão de crédito · Você só é cobrado se continuar depois dos 7 dias de teste.<br>Na API oficial, as mensagens podem ter custo cobrado pela Meta conforme a <a href="https://developers.facebook.com/docs/whatsapp/pricing" target="_blank" rel="noopener" style="color:var(--purple-600);font-weight:700">tabela oficial</a>.</p>
   </div>
 </section>
+<!-- ============ PRINCIPAIS PONTOS ============ -->
+<section class="section" id="principais-pontos">
+  <div class="container">
+    <div class="sec-head center reveal">
+      <span class="eyebrow">Resumo</span>
+      <h2 class="h-sec">Principais pontos</h2>
+      
+    </div>
+    <ol class="keypts reveal">
+      <li>A URA do DevChat é um menu automático que recebe o cliente no WhatsApp e o encaminha para o departamento escolhido.</li>
+      <li>No DevChat, URA, mensagem de boas-vindas, horários de atendimento e botões são configurados sem programação.</li>
+      <li>A URA do DevChat funciona por regras definidas pela empresa e não usa inteligência artificial.</li>
+      <li>Fora do horário de atendimento, o DevChat envia uma mensagem automática e mantém a conversa na fila.</li>
+      <li>O DevChat custa R$178 por mês para 2 atendentes, R$356 para 4 e R$750 para 10, com preço por empresa, 7 dias grátis e sem fidelidade.</li>
+    </ol>
+  </div>
+</section>
 <!-- ============ FAQ ============ -->
-<section class="section" id="faq">
+<section class="section section--soft" id="faq">
   <div class="container">
     <div class="sec-head center reveal">
       <span class="eyebrow">Dúvidas frequentes</span>

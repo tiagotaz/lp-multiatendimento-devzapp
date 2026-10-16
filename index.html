@@ -49,7 +49,16 @@
       "@type": "Organization",
       "@id": "https://multiatendimento.devzapp.com.br/#organization",
       "name": "DevChat",
+      "alternateName": [
+        "DevChat by DevZapp",
+        "DevChat Multiatendimento"
+      ],
       "url": "https://multiatendimento.devzapp.com.br/",
+      "parentOrganization": {
+        "@type": "Organization",
+        "name": "DevZapp",
+        "url": "https://devzapp.com.br/"
+      },
       "logo": "https://multiatendimento.devzapp.com.br/assets/img/logo-devchat.svg",
       "description": "DevChat é uma plataforma de multiatendimento para WhatsApp com API oficial, CRM Kanban e preço por empresa.",
       "areaServed": "BR"
@@ -68,9 +77,10 @@
       "@type": "SoftwareApplication",
       "@id": "https://multiatendimento.devzapp.com.br/#software",
       "name": "DevChat",
+      "alternateName": "DevChat Multiatendimento para WhatsApp",
       "applicationCategory": "BusinessApplication",
       "operatingSystem": "Web, Android, iOS",
-      "description": "Multiatendimento no WhatsApp com vários atendentes no mesmo número, distribuição automática, URA, CRM Kanban, dashboards e relatórios.",
+      "description": "DevChat é uma plataforma de multiatendimento para WhatsApp, da DevZapp: vários atendentes no mesmo número, distribuição automática, URA, CRM Kanban, dashboards e relatórios. Funciona com a WhatsApp Business Platform (API oficial da Meta).",
       "publisher": {
         "@id": "https://multiatendimento.devzapp.com.br/#organization"
       },
@@ -128,7 +138,7 @@
           "name": "Funciona no WhatsApp comum ou preciso do Business/API?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Funciona com WhatsApp comum, WhatsApp Business e também com a API oficial do WhatsApp (Meta). Você pode começar com o que já usa hoje e evoluir para a API oficial quando precisar de mais escala e segurança."
+            "text": "Funciona com o WhatsApp comum, com o aplicativo WhatsApp Business e com a WhatsApp Business Platform (API oficial da Meta). Você pode começar com o que já usa hoje e migrar para a API oficial quando precisar de mais escala, integrações e segurança para o número."
           }
         },
         {
@@ -184,7 +194,7 @@
           "name": "Meus dados ficam seguros?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Sim. Os dados são armazenados de forma criptografada, com altos padrões de segurança e em conformidade com a LGPD."
+            "text": "Sim. Os dados são armazenados de forma criptografada e tratados em conformidade com a LGPD (Lei Geral de Proteção de Dados, Lei 13.709/2018)."
           }
         },
         {
@@ -272,7 +282,7 @@
         
         <span class="eyebrow">Multiatendimento oficial para WhatsApp</span>
         <h1 class="h1--md">Um número de WhatsApp. Toda a sua equipe atendendo. <span class="text-grad">Nenhum cliente esquecido.</span></h1>
-        <p class="hero__sub">Distribua conversas entre atendentes, acompanhe cada venda no CRM e veja tudo em tempo real. Com a API oficial da Meta.</p>
+        <p class="hero__sub">O DevChat, plataforma de multiatendimento para WhatsApp da DevZapp, coloca toda a equipe atendendo no mesmo número, distribui as conversas automaticamente e acompanha cada venda num CRM Kanban. Funciona com a WhatsApp Business Platform (API oficial da Meta).</p>
         <div class="hero__cta">
           <a href="#" class="btn btn--primary btn--lg">Testar grátis por 7 dias <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
           <a href="#como-funciona" class="btn btn--ghost btn--lg"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M10 8l6 4-6 4z" fill="currentColor"/></svg> Ver como funciona</a>
@@ -330,8 +340,8 @@
   <div class="container">
     <div class="sec-head center reveal">
       <span class="eyebrow">O problema</span>
-      <h2 class="h-sec">Se o seu WhatsApp está assim, <span class="text-grad">você está perdendo venda</span></h2>
-      
+      <h2 class="h-sec">Por que o WhatsApp da empresa <span class="text-grad">perde vendas</span> quando a equipe cresce?</h2>
+      <p class="lead"><strong>Quando várias pessoas dividem um celular, o cliente espera, o histórico se perde e o gestor não vê o que acontece.</strong></p>
     </div>
     <div class="pain-grid">
       <article class="pain reveal">
@@ -376,8 +386,8 @@
   <div class="container">
     <div class="sec-head center reveal">
       <span class="eyebrow">Como começar</span>
-      <h2 class="h-sec">O DevChat organiza o seu WhatsApp <span class="text-grad">em 3 passos</span></h2>
-      
+      <h2 class="h-sec">Como organizar o WhatsApp da empresa <span class="text-grad">com o DevChat</span>?</h2>
+      <p class="lead"><strong>São 3 passos: conectar o número, cadastrar a equipe e começar a atender.</strong></p>
     </div>
     <div class="steps">
       <article class="step reveal">
@@ -401,8 +411,8 @@
   <div class="container">
     <div class="sec-head center reveal">
       <span class="eyebrow">Veja funcionando</span>
-      <h2 class="h-sec">Veja o DevChat <span class="text-grad">na prática</span></h2>
-      <p class="lead">Telas reais do sistema: a conversa chega, o atendente responde e o cliente avança no funil.</p>
+      <h2 class="h-sec">Como o DevChat funciona <span class="text-grad">na prática</span>?</h2>
+      <p class="lead"><strong>A conversa chega, é distribuída para um atendente e o cliente avança no funil do CRM, tudo na mesma tela.</strong> Abaixo, telas reais do sistema.</p>
     </div>
     <div class="split">
       <div class="split__media reveal">
@@ -442,8 +452,8 @@
   <div class="container">
     <div class="sec-head center reveal">
       <span class="eyebrow">Recursos</span>
-      <h2 class="h-sec">Tudo que sua equipe precisa para <span class="text-grad">atender melhor e vender mais</span></h2>
-      
+      <h2 class="h-sec">O que o <span class="text-grad">DevChat</span> faz?</h2>
+      <p class="lead"><strong>Os recursos do DevChat se dividem em quatro grupos: atender, vender, gerir e integrar.</strong></p>
     </div>
     <div class="groups">
       <article class="group reveal">
@@ -474,8 +484,8 @@
   <div class="container">
     <div class="center reveal" style="max-width:760px;margin:0 auto">
       <span class="soon">Em breve</span>
-      <h2 class="h-sec">A IA que lê todas as conversas e <span class="text-grad">te conta o que ninguém conta</span></h2>
-      <p class="lead" style="margin:18px auto 30px">Descubra quais atendimentos perderam venda, quais clientes estão insatisfeitos e qual atendente precisa de ajuda, sem precisar ler conversa por conversa.</p>
+      <h2 class="h-sec">O DevChat tem <span class="text-grad">inteligência artificial</span>?</h2>
+      <p class="lead" style="margin:18px auto 30px"><strong>Ainda não: a análise de conversas por IA está em desenvolvimento pela DevZapp.</strong> Ela vai ler os atendimentos e mostrar quais perderam venda, quais clientes estão insatisfeitos e qual atendente precisa de ajuda.</p>
       <a href="/recursos/ia/" class="btn btn--primary btn--lg">Quero acesso antecipado <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
     </div>
   </div>
@@ -485,8 +495,8 @@
   <div class="container">
     <div class="sec-head center reveal">
       <span class="eyebrow">A transformação</span>
-      <h2 class="h-sec">Antes e depois do <span class="text-grad">DevChat</span></h2>
-      
+      <h2 class="h-sec">O que muda depois do <span class="text-grad">DevChat</span>?</h2>
+      <p class="lead"><strong>O atendimento sai de um celular compartilhado e passa a ter fila, histórico, funil e relatórios.</strong></p>
     </div>
     <div class="ba">
       <div class="ba__col ba--before reveal">
@@ -516,8 +526,8 @@
   <div class="container">
     <div class="sec-head center reveal">
       <span class="eyebrow">Por que trocar</span>
-      <h2 class="h-sec">Por que empresas trocam <span class="text-grad">para o DevChat</span></h2>
-      
+      <h2 class="h-sec">Qual a diferença entre o DevChat e <span class="text-grad">outras ferramentas</span>?</h2>
+      <p class="lead"><strong>O DevChat cobra por empresa, sem fidelidade, e já inclui o CRM Kanban.</strong></p>
     </div>
     <div class="cmp-wrap reveal">
       <table class="cmp">
@@ -531,6 +541,7 @@
         </tbody>
       </table>
     </div>
+    <p class="src-note">Comparação feita pela DevZapp com base nos sites públicos de 6 ferramentas de multiatendimento para WhatsApp, em outubro de 2026.</p>
   </div>
 </section>
 <!-- ============ PARA QUEM ============ -->
@@ -538,8 +549,8 @@
   <div class="container">
     <div class="sec-head center reveal">
       <span class="eyebrow">Para quem é</span>
-      <h2 class="h-sec">Feito para quem atende e vende <span class="text-grad">pelo WhatsApp</span></h2>
-      <p class="lead">Veja como o DevChat funciona no seu segmento.</p>
+      <h2 class="h-sec">Para quem o <span class="text-grad">DevChat</span> é indicado?</h2>
+      <p class="lead"><strong>Para empresas que atendem e vendem pelo WhatsApp com mais de uma pessoa, como clínicas, imobiliárias, escolas, lojas e concessionárias.</strong></p>
     </div>
     <div class="features">
       <a href="/para/clinicas/" class="feature reveal">
@@ -575,8 +586,8 @@
   <div class="container">
     <div class="sec-head center reveal">
       <span class="eyebrow">Planos</span>
-      <h2 class="h-sec">Escolha o plano e comece <span class="text-grad">hoje</span></h2>
-      <p class="lead">Preço por empresa, não por usuário. Sem fidelidade. Teste grátis por 7 dias.</p>
+      <h2 class="h-sec">Quanto custa o <span class="text-grad">DevChat</span>?</h2>
+      <p class="lead"><strong>De R$178 a R$750 por mês, por empresa: 2, 4 ou 10 atendentes, com 7 dias grátis e sem fidelidade.</strong></p>
     </div>
     <div class="plans">
       <article class="plan reveal">
@@ -628,8 +639,25 @@
     <p class="price-note">Precisa de mais operadores? <a href="https://wa.me/" style="color:var(--purple-600);font-weight:700">Fale com um especialista</a>. Pagamento no cartão de crédito · Você só é cobrado se continuar depois dos 7 dias de teste.<br>Na API oficial, as mensagens podem ter custo cobrado pela Meta conforme a <a href="https://developers.facebook.com/docs/whatsapp/pricing" target="_blank" rel="noopener" style="color:var(--purple-600);font-weight:700">tabela oficial</a>.</p>
   </div>
 </section>
+<!-- ============ PRINCIPAIS PONTOS ============ -->
+<section class="section" id="principais-pontos">
+  <div class="container">
+    <div class="sec-head center reveal">
+      <span class="eyebrow">Resumo</span>
+      <h2 class="h-sec">Principais pontos</h2>
+      
+    </div>
+    <ol class="keypts reveal">
+      <li>O DevChat é uma plataforma de multiatendimento para WhatsApp desenvolvida pela DevZapp que permite que vários atendentes usem o mesmo número de WhatsApp ao mesmo tempo.</li>
+      <li>O DevChat funciona com a WhatsApp Business Platform (API oficial da Meta), com o aplicativo WhatsApp Business e com o WhatsApp comum.</li>
+      <li>No DevChat, cada conversa vira um card num CRM Kanban, e o atendente muda a etapa do cliente direto na tela de atendimento.</li>
+      <li>O DevChat custa R$178 por mês para 2 atendentes, R$356 para 4 e R$750 para 10, com preço por empresa, 7 dias grátis e sem fidelidade.</li>
+      <li>O DevChat trata os dados conforme a LGPD (Lei 13.709/2018) e tem suporte todos os dias, das 9h às 22h.</li>
+    </ol>
+  </div>
+</section>
 <!-- ============ FAQ ============ -->
-<section class="section" id="faq">
+<section class="section section--soft" id="faq">
   <div class="container">
     <div class="sec-head center reveal">
       <span class="eyebrow">Dúvidas frequentes</span>
@@ -650,7 +678,7 @@
       <div class="faq__item reveal">
         <button class="faq__q" aria-expanded="false">Funciona no WhatsApp comum ou preciso do Business/API?
           <span class="ic"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span></button>
-        <div class="faq__a"><p>Funciona com WhatsApp comum, WhatsApp Business e também com a API oficial do WhatsApp (Meta). Você pode começar com o que já usa hoje e evoluir para a API oficial quando precisar de mais escala e segurança.</p></div>
+        <div class="faq__a"><p>Funciona com o WhatsApp comum, com o aplicativo WhatsApp Business e com a WhatsApp Business Platform (API oficial da Meta). Você pode começar com o que já usa hoje e migrar para a API oficial quando precisar de mais escala, integrações e segurança para o número.</p></div>
       </div>
       <div class="faq__item reveal">
         <button class="faq__q" aria-expanded="false">O DevChat pode bloquear meu número?
@@ -685,7 +713,7 @@
       <div class="faq__item reveal">
         <button class="faq__q" aria-expanded="false">Meus dados ficam seguros?
           <span class="ic"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span></button>
-        <div class="faq__a"><p>Sim. Os dados são armazenados de forma criptografada, com altos padrões de segurança e em conformidade com a LGPD.</p></div>
+        <div class="faq__a"><p>Sim. Os dados são armazenados de forma criptografada e tratados em conformidade com a LGPD (Lei Geral de Proteção de Dados, Lei 13.709/2018).</p></div>
       </div>
       <div class="faq__item reveal">
         <button class="faq__q" aria-expanded="false">Posso integrar com meu CRM ou sistema?

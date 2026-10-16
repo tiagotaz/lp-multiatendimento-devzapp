@@ -514,3 +514,12 @@ a.feature { display: block; color: inherit; }
 .ba__col h3 svg { width: 20px; height: 20px; flex: none; }
 .hero h1.h1--md { font-size: clamp(34px, 4.4vw, 52px); }
 .stages { list-style: none; padding: 0; }
+
+/* Principais pontos (resumo citável) */
+.keypts { max-width: 860px; margin: 0 auto; display: grid; gap: 14px; counter-reset: kp; list-style: none; padding: 0; }
+.keypts li { position: relative; background: #fff; border: 1px solid var(--slate-200); border-radius: var(--radius-sm); padding: 18px 20px 18px 66px; box-shadow: var(--shadow-sm); font-size: 16px; color: var(--slate-700); }
+.keypts li::before { counter-increment: kp; content: counter(kp); position: absolute; left: 18px; top: 16px; width: 32px; height: 32px; border-radius: 10px; display: grid; place-items: center; background: var(--grad-brand); color: #fff; font-weight: 800; font-size: 15px; }
+.sec-head .lead strong { color: var(--ink); font-weight: 700; }
+.section--dark .sec-head .lead strong, .section--dark .lead strong { color: #fff; }
+.split__copy .lead strong { color: var(--ink); font-weight: 700; }
+.src-note { max-width: 860px; margin: 18px auto 0; text-align: center; font-size: 13px; color: var(--slate-400); }
