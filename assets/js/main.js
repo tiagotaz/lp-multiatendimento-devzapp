@@ -153,6 +153,9 @@
         nome: nome, email: email, telefone: tel,
         objetivo: atend,          // quantidade de atendentes no escritório
         atendentes: atend,
+        empresa: get("empresa"),
+        nicho: get("nicho"),
+        origem: form.dataset.origem || "",
         pagina: location.href,
         utm_source: utms.utm_source || "",
         utm_medium: utms.utm_medium || "",
@@ -210,7 +213,7 @@
           
           // Disparar conversão só quando o webhook confirmar sucesso
           if (response.ok) {
-            fire("Lead", { content_name: "teste_gratis", num_atendentes: atend }, "generate_lead");
+            fire("Lead", { content_name: form.dataset.origem === "lista-espera-ia" ? "lista_espera_ia" : "teste_gratis", num_atendentes: atend }, "generate_lead");
             
             // Salvar no Supabase (não bloqueia o fluxo)
             if (window.saveLeadToSupabase) {
@@ -300,7 +303,7 @@
   document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !modal.hidden) closeModal(); });
 
   /* ---- Cliques nos CTAs: abre modal (especialista / teste grátis / demonstração) ---- */
-  var MODAL_TRIGGER = /especialista|teste gr[aá]tis|demonstra/i;
+  var MODAL_TRIGGER = /especialista|test(e|ar) gr[aá]tis|demonstra/i;
   document.addEventListener("click", function (ev) {
     var a = ev.target.closest("a, button");
     if (!a) return;

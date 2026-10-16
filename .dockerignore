@@ -12,3 +12,8 @@ app.yaml
 # Artefatos de desenvolvimento (não publicar)
 _modelo/
 partials/
+
+# Rascunhos jurídicos: só publicar após revisão do advogado e dados da empresa
+termos/
+privacidade/
+lgpd/
