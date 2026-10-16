@@ -42,7 +42,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'" />
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" /></noscript>
 
-<link rel="stylesheet" href="/assets/css/styles.css" />
+<link rel="stylesheet" href="/assets/css/styles.css?v=20261016" />
 
 <!-- favicon inline (raio da marca) -->
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236d44f7'/%3E%3Cpath d='M17 5 8 18h6l-1 9 9-13h-6z' fill='white'/%3E%3C/svg%3E" />
@@ -141,6 +141,7 @@
     </a>
     <nav class="nav__links" aria-label="Principal">
       <a href="#recursos">Recursos</a>
+      <a href="#crm">CRM</a>
       <a href="#como-funciona">Como funciona</a>
       <a href="#para-quem">Para quem</a>
       <a href="#planos">Planos</a>
@@ -158,6 +159,7 @@
   </div>
   <div class="mobile-menu" id="mobileMenu">
     <a href="#recursos">Recursos</a>
+    <a href="#crm">CRM</a>
     <a href="#como-funciona">Como funciona</a>
     <a href="#para-quem">Para quem</a>
     <a href="#planos">Planos</a>
@@ -354,6 +356,48 @@
         <h3>Relatórios de produtividade por atendente</h3>
         <p>Ranking de quem mais atende, tempo médio e volume por fila. Exporte tudo quando quiser.</p>
       </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CRM NO WHATSAPP ============ -->
+<section class="section section--soft" id="crm">
+  <div class="container">
+    <div class="split">
+      <div class="split__media reveal">
+        <video src="/assets/video/crm-kanban.mp4" poster="/assets/img/tela-crm-kanban.webp" width="1280" height="710" muted loop playsinline preload="none" data-autoplay aria-label="Demonstração do CRM Kanban do DevChat: cards de atendimento sendo movidos entre etapas"></video>
+      </div>
+      <div class="split__copy reveal">
+        <span class="eyebrow">Novo: CRM integrado</span>
+        <h2 class="h-sec">Cada ticket com dono, etapa e <span class="text-grad">status à vista</span></h2>
+        <p class="lead">Monte quadros por departamento, como Entrada, Análise, Tratativa, Validação e Resolvido, e acompanhe a fila inteira em um só painel visual.</p>
+        <ul class="feat-list">
+          <li><span class="ck"><svg viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div><strong>Arraste o card para a próxima etapa</strong><p>Cada atendimento vira um card com operador, departamento, status e a última mensagem. Mover de etapa é só arrastar.</p></div></li>
+          <li><span class="ck"><svg viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div><strong>Quadros com as suas etapas</strong><p>Monte um quadro por departamento com as etapas do seu processo e defina a etapa inicial de cada novo ticket.</p></div></li>
+          <li><span class="ck"><svg viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div><strong>Filtros e contadores no topo</strong><p>Busque por nome, telefone ou ticket e filtre por departamento, operador, status e data. Veja na hora quantos estão em atendimento, pausados, abertos ou fechados.</p></div></li>
+          <li><span class="ck"><svg viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div><strong>Ficha completa do ticket</strong><p>Clique no card e veja etapa atual, dados do contato, histórico e a conversa inteira, sem sair do CRM.</p></div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="split split--rev">
+      <div class="split__media reveal">
+        <video src="/assets/video/crm-atendimento.mp4" poster="/assets/img/tela-crm-etapa.webp" width="1280" height="720" muted loop playsinline preload="none" data-autoplay aria-label="Demonstração do DevChat: operador movendo o cliente de etapa do CRM direto pela tela de atendimento"></video>
+      </div>
+      <div class="split__copy reveal">
+        <span class="eyebrow">CRM na tela de atendimento</span>
+        <h2 class="h-sec">O atendente avança o ticket <span class="text-grad">sem trocar de tela</span></h2>
+        <p class="lead">A etapa do CRM muda direto na conversa. Você supervisiona a operação sem precisar perguntar a ninguém em que pé está cada caso.</p>
+        <ul class="feat-list">
+          <li><span class="ck"><svg viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div><strong>Mova de etapa em um clique</strong><p>O botão CRM fica no topo da conversa: o atendente escolhe a nova etapa e o quadro é atualizado na hora.</p></div></li>
+          <li><span class="ck"><svg viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div><strong>Atendimento e CRM lado a lado</strong><p>Alterne entre a visão de atendimento e a visão de CRM sem perder o contexto do cliente.</p></div></li>
+          <li><span class="ck"><svg viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div><strong>Funil sempre em dia</strong><p>Ninguém precisa lembrar de atualizar planilha depois: a etapa muda junto com a conversa.</p></div></li>
+        </ul>
+      </div>
     </div>
   </div>
 </section>
@@ -597,6 +641,7 @@
       <div class="footer__col">
         <h4>Produto</h4>
         <a href="#recursos">Recursos</a>
+        <a href="#crm">CRM</a>
         <a href="#como-funciona">Como funciona</a>
         <a href="#planos">Planos</a>
         <a href="#faq">Dúvidas</a>
@@ -628,7 +673,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="/assets/js/supabase-config.js"></script>
-<script src="/assets/js/main.js" defer></script>
+<script src="/assets/js/main.js?v=20261016" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="/assets/js/supabase-config.js"></script>
 <script src="/assets/js/user-analytics.js"></script>

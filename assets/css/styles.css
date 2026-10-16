@@ -232,7 +232,8 @@ h1, h2, h3 { line-height: 1.1; letter-spacing: -0.02em; font-weight: 800; }
 .feat-list strong { display: block; font-size: 16px; }
 .feat-list p { font-size: 14.5px; color: var(--slate-500); }
 .split__media img { border-radius: var(--radius); border: 1px solid var(--slate-200); box-shadow: var(--shadow-lg); }
-.section--dark .split__media img { border-color: var(--slate-900); }
+.split__media video { display: block; width: 100%; height: auto; background: var(--slate-100); border-radius: var(--radius); border: 1px solid var(--slate-200); box-shadow: var(--shadow-lg); }
+.section--dark .split__media img, .section--dark .split__media video { border-color: var(--slate-900); }
 .section--dark .feat-list .ck { background: rgba(43,217,154,.12); color: var(--emerald-300); }
 .section--dark .feat-list p { color: var(--slate-400); }
 

@@ -338,4 +338,26 @@
   } else {
     reveals.forEach(function (el) { el.classList.add("in"); });
   }
+
+  /* ---- Vídeos de demonstração: só carregam/tocam quando visíveis ---- */
+  var videos = document.querySelectorAll("video[data-autoplay]");
+  var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (reduceMotion || !("IntersectionObserver" in window)) {
+    videos.forEach(function (v) { v.controls = true; });
+  } else {
+    var vio = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) {
+            var p = e.target.play();
+            if (p && p.catch) p.catch(function () { e.target.controls = true; });
+          } else {
+            e.target.pause();
+          }
+        });
+      },
+      { threshold: 0.35 }
+    );
+    videos.forEach(function (v) { vio.observe(v); });
+  }
 })();
