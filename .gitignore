@@ -7,3 +7,6 @@
 # Logs e temporários
 *.log
 node_modules/
+
+# PDFs gerados localmente pela API de material
+api/storage/

@@ -112,6 +112,28 @@
 
   /* ---- Envio do lead para o webhook (nome, email, telefone, objetivo, UTMs) ---- */
   var ENDPOINT = "https://webhook.integrations.devzapp.com.br/webhook/lp-chat";
+  // API que gera o PDF por nicho (pasta api/). Vazio = não gera e envia o lead sem material_url.
+  // Local: http://localhost:3333. Produção: serviço devchat-material-api no Cloud Run.
+  var MATERIAL_API = /^(localhost|127\.0\.0\.1)$/.test(location.hostname)
+    ? "http://localhost:3333/api/material"
+    : "https://devchat-material-api-463492272412.us-east4.run.app/api/material";
+  var MATERIAL_TIMEOUT = 12000;
+  // Gera o PDF e devolve a URL; em qualquer falha devolve "" para o lead seguir sem material
+  var gerarMaterial = function (dados) {
+    if (!MATERIAL_API) return Promise.resolve("");
+    var controller = new AbortController();
+    var t = setTimeout(function () { controller.abort(); }, MATERIAL_TIMEOUT);
+    return fetch(MATERIAL_API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(dados),
+      signal: controller.signal
+    })
+      .then(function (r) { return r.ok ? r.json() : {}; })
+      .then(function (j) { return (j && j.url) || ""; })
+      .catch(function (e) { console.warn("[DevChat] Material não gerado:", e.message); return ""; })
+      .finally(function () { clearTimeout(t); });
+  };
   var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
   var MAX_RETRIES = 3;
   var RETRY_DELAY = 1000; // 1 segundo inicial
@@ -137,12 +159,20 @@
       var telDigits = tel.replace(/\D/g, "");
       var nomeOk = nome.length >= 2, emailOk = EMAIL_RE.test(email);
       var telOk = telDigits.length >= 10 && telDigits.length <= 11;
+      var empEl = form.querySelector("[name=empresa]");
+      var empOk = !empEl || get("empresa").length >= 2;
+      var nichoEl = form.querySelector("[name=nicho]");
+      var nichoOk = !nichoEl || !!nichoEl.value;
       setError(form, "nome", !nomeOk);
+      setError(form, "empresa", !empOk);
+      setError(form, "nicho", !nichoOk);
       setError(form, "email", !emailOk);
       setError(form, "telefone", !telOk);
       var bad = (!nomeOk && form.querySelector("[name=nome]")) ||
                 (!emailOk && form.querySelector("[name=email]")) ||
-                (!telOk && form.querySelector("[name=telefone]"));
+                (!telOk && form.querySelector("[name=telefone]")) ||
+                (!empOk && empEl) ||
+                (!nichoOk && nichoEl);
       if (bad) { bad.focus(); return; }
 
       var btn = form.querySelector("button[type=submit]");
@@ -155,6 +185,7 @@
         atendentes: atend,
         empresa: get("empresa"),
         nicho: get("nicho"),
+        material_url: "",         // preenchido por gerarMaterial() antes do envio
         origem: form.dataset.origem || "",
         pagina: location.href,
         utm_source: utms.utm_source || "",
@@ -172,6 +203,7 @@
           email: email,
           telefone: tel,
           atendentes: atend,
+          nicho: get("nicho"),
           pagina: location.pathname,
           data: new Date().toISOString(),
           utms: utms
@@ -253,7 +285,13 @@
         });
       };
       
-      sendWithRetry(1);
+      if (btn && MATERIAL_API) btn.innerHTML = "Preparando seu material...";
+      gerarMaterial({ nome: nome, empresa: payload.empresa, nicho: payload.nicho, atendentes: atend })
+        .then(function (url) {
+          payload.material_url = url;
+          if (btn) btn.innerHTML = "Enviando...";
+          sendWithRetry(1);
+        });
     });
   };
   document.querySelectorAll("[data-lead-form]").forEach(initLeadForm);
@@ -269,10 +307,12 @@
       '<h3 id="leadModalTitle">Comece seu teste grátis</h3>' +
       '<p class="modal__sub">Preencha e um especialista entra em contato pelo seu WhatsApp.</p>' +
       '<form class="lead-form" data-lead-form data-origem="modal" novalidate>' +
-        '<div><label for="m_nome">Seu nome</label><input type="text" id="m_nome" name="nome" placeholder="Nome e sobrenome" required /><p class="field-error" data-error-for="nome" hidden>Informe seu nome.</p></div>' +
+        '<div><label for="m_nome">Seu nome</label><input type="text" id="m_nome" name="nome" placeholder="Nome e sobrenome" autocomplete="name" required /><p class="field-error" data-error-for="nome" hidden>Informe seu nome.</p></div>' +
         '<div><label for="m_email">Seu e-mail</label><input type="email" id="m_email" name="email" placeholder="voce@empresa.com.br" autocomplete="email" required /><p class="field-error" data-error-for="email" hidden>Informe um e-mail válido.</p></div>' +
         '<div><label for="m_tel">Seu WhatsApp</label><input type="tel" id="m_tel" name="telefone" placeholder="(00) 00000-0000" inputmode="numeric" maxlength="16" autocomplete="tel" required /><p class="field-error" data-error-for="telefone" hidden>Informe um WhatsApp válido com DDD.</p></div>' +
-        '<div><label for="m_at">Quantidade de atendentes no escritório</label><select id="m_at" name="atendentes"><option value="1 a 2">1 a 2</option><option value="3 a 5">3 a 5</option><option value="6 a 10">6 a 10</option><option value="11 a 20">11 a 20</option><option value="21 ou mais">21 ou mais</option></select></div>' +
+        '<div><label for="m_emp">Nome da empresa</label><input type="text" id="m_emp" name="empresa" placeholder="Nome da sua empresa" autocomplete="organization" maxlength="80" required /><p class="field-error" data-error-for="empresa" hidden>Informe o nome da empresa.</p></div>' +
+        '<div><label for="m_at">Quantidade de atendentes</label><select id="m_at" name="atendentes"><option value="1 a 2">1 a 2</option><option value="3 a 5">3 a 5</option><option value="6 a 10">6 a 10</option><option value="11 a 20">11 a 20</option><option value="21 ou mais">21 ou mais</option></select></div>' +
+        '<div><label for="m_ni">Nicho da empresa</label><select id="m_ni" name="nicho" required><option value="" disabled selected>Selecione o nicho</option><option value="Contabilidade">Contabilidade</option><option value="Clínica ou consultório">Clínica ou consultório</option><option value="Imobiliária">Imobiliária</option><option value="Escola ou curso">Escola ou curso</option><option value="Loja ou e-commerce">Loja ou e-commerce</option><option value="Concessionária ou oficina">Concessionária ou oficina</option><option value="Advocacia">Advocacia</option><option value="Outro">Outro</option></select><p class="field-error" data-error-for="nicho" hidden>Selecione o nicho da sua empresa.</p></div>' +
         '<button type="submit" class="btn btn--primary btn--lg btn--block">Quero começar agora<svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>' +
         '<p class="lead-form__note">Seus dados estão seguros (LGPD).</p>' +
       '</form>' +
@@ -282,6 +322,15 @@
     if (modalReady) return;
     document.body.appendChild(modal);
     initLeadForm(modal.querySelector("[data-lead-form]"));
+    // Pré-seleciona o nicho nas páginas segmentadas
+    var NICHO_POR_PAGINA = [
+      [/contabilidade/, "Contabilidade"], [/clinicas|pg1/, "Clínica ou consultório"],
+      [/imobiliarias/, "Imobiliária"], [/escolas/, "Escola ou curso"],
+      [/ecommerce/, "Loja ou e-commerce"], [/automotivo/, "Concessionária ou oficina"]
+    ];
+    NICHO_POR_PAGINA.forEach(function (n) {
+      if (n[0].test(location.pathname)) modal.querySelector("[name=nicho]").value = n[1];
+    });
     modal.addEventListener("click", function (e) {
       if (e.target === modal || e.target.closest(".modal__close")) closeModal();
     });

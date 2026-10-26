@@ -70,3 +70,6 @@ coverage/
 *.bak
 *.backup
 *~
+
+# API de material (serviço separado)
+api/

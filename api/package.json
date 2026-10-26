@@ -1,0 +1,22 @@
+{
+  "name": "devchat-material-api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Gera o PDF personalizado por nicho (plano de atendimento DevChat) e devolve um link público único.",
+  "main": "src/server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "exemplo": "node scripts/exemplo.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@fontsource/inter": "^5.3.0",
+    "@google-cloud/storage": "^7.22.0",
+    "express": "^4.22.3",
+    "puppeteer": "^23.11.1"
+  }
+}

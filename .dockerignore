@@ -17,3 +17,6 @@ partials/
 termos/
 privacidade/
 lgpd/
+
+# API de material (serviço separado, não vai para o nginx)
+api/
