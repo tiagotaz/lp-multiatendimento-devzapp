@@ -50,8 +50,11 @@ const limitePorIP = (req, res, next) => {
 let browserPromise = null;
 const getBrowser = () => {
   if (!browserPromise) {
-    browserPromise = puppeteer.launch({ headless: true, handleSIGTERM: false, handleSIGINT: false, args: ["--no-sandbox", "--disable-dev-shm-usage"] });
-    browserPromise.then((b) => b.on("disconnected", () => { browserPromise = null; }));
+    browserPromise = puppeteer
+      .launch({ headless: true, timeout: 60000, handleSIGTERM: false, handleSIGINT: false, args: ["--no-sandbox", "--disable-dev-shm-usage"] })
+      .then((b) => { b.on("disconnected", () => { browserPromise = null; }); return b; })
+      // Falhou ao abrir: libera para tentar de novo na próxima requisição (sem derrubar o servidor)
+      .catch((err) => { browserPromise = null; throw err; });
   }
   return browserPromise;
 };
