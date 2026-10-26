@@ -27,8 +27,9 @@ npm run exemplo         # (em outro terminal) gera 1 PDF de cada nicho
 Resposta `201`:
 
 ```json
-{ "id": "Sg5-HZK28B2Uc0HR",
-  "url": "http://localhost:3333/m/plano-clinica-sorriso-vivo-Sg5-HZK28B2Uc0HR.pdf",
+{ "id": "FXfXEagxXA",
+  "url": "https://multiatendimento.devzapp.com.br/m/FXfXEagxXA",
+  "arquivo": "Plano de atendimento - Clínica Sorriso Vivo.pdf",
   "nicho": "Clínica ou consultório", "paginas": 4 }
 ```
 
@@ -36,7 +37,9 @@ Resposta `201`:
 - `nicho` precisa ser um dos valores do formulário do site (`GET /api/nichos` lista). Valor
   desconhecido cai em "Outro".
 - Aceita o mesmo payload que o site manda para o webhook (`objetivo` vale como `atendentes`).
-- O link tem um id aleatório de 16 caracteres: é público, mas impossível de adivinhar.
+- O link tem um id aleatório de 10 letras/números: é público, mas impossível de adivinhar.
+- `arquivo` é o nome para enviar o PDF como documento no WhatsApp (o mesmo nome aparece ao baixar).
+- Em produção o link usa o domínio do site: o `nginx.conf` da raiz repassa `/m/` para esta API.
 
 ## Como o site usa
 
@@ -81,7 +84,9 @@ http://localhost:8765/contato/.
 gcloud run deploy devchat-material-api --source . --region us-east4 --project devzap-prod \
   --allow-unauthenticated --memory 2Gi --cpu 2 --concurrency 4 --timeout 60 --cpu-boost \
   --min-instances 0 --max-instances 5 \
-  --set-env-vars "GCS_BUCKET=bucket-files-materiais-devchat,API_KEY=<chave>"
+  --update-env-vars "GCS_BUCKET=bucket-files-materiais-devchat,PUBLIC_BASE_URL=https://multiatendimento.devzapp.com.br"
 ```
+
+`--update-env-vars` mantém a `API_KEY` já configurada no serviço.
 
 `assets/` aqui dentro são cópias de `../assets/img` (o container só leva esta pasta).

@@ -74,8 +74,9 @@ async function gerarPDF(html) {
   }
 }
 
-const slug = (s) => String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-  .toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40);
+// 10 caracteres alfanuméricos (~58 bits): curto para o WhatsApp e impossível de adivinhar
+const ALFABETO = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789";
+const novoId = () => Array.from(crypto.randomBytes(10), (b) => ALFABETO[b % ALFABETO.length]).join("");
 const texto = (v, max) => (typeof v === "string" ? v.trim().slice(0, max) : "");
 
 // Servidor (n8n etc.): x-api-key, sem limite. Navegador: origem do site + limite por IP.
@@ -101,15 +102,16 @@ app.post("/api/material", auth, async (req, res) => {
   if (lead.nome.length < 2) return res.status(400).json({ erro: "Campo 'nome' é obrigatório." });
 
   const nicho = getNicho(lead.nicho);
-  const id = crypto.randomBytes(12).toString("base64url");
-  const arquivo = `plano-${slug(lead.empresa || lead.nome) || "devchat"}-${id}.pdf`;
+  const id = novoId();
+  // Nome usado ao baixar o PDF ou ao enviá-lo como documento no WhatsApp
+  const arquivo = `Plano de atendimento - ${(lead.empresa || lead.nome).replace(/[\\/:*?"<>|]+/g, " ").trim()}.pdf`;
   const t0 = Date.now();
   try {
     const pdf = await gerarPDF(renderHTML(lead, nicho));
-    await salvar(arquivo, pdf);
-    const url = `${baseUrl(req)}/m/${arquivo}`;
+    await salvar(id, pdf, arquivo);
+    const url = `${baseUrl(req)}/m/${id}`;
     console.log(`[material] ${nicho.nome} · ${arquivo} · ${Date.now() - t0}ms`);
-    res.status(201).json({ id, url, nicho: nicho.nome, paginas: 4 });
+    res.status(201).json({ id, url, arquivo, nicho: nicho.nome, paginas: 4 });
   } catch (err) {
     console.error("[material] falha ao gerar", err);
     res.status(500).json({ erro: "Não foi possível gerar o material." });
@@ -117,18 +119,22 @@ app.post("/api/material", auth, async (req, res) => {
 });
 
 // Link público do PDF (lê do disco local ou do bucket privado)
-const ARQUIVO_RE = /^plano-[a-z0-9-]*-[A-Za-z0-9_-]{16}\.pdf$/;
-app.get("/m/:arquivo", async (req, res) => {
-  const { arquivo } = req.params;
-  if (!ARQUIVO_RE.test(arquivo)) return res.sendStatus(404);
+// /m/<id> (atual) ou /m/plano-<empresa>-<id>.pdf (links dos primeiros testes)
+const CHAVE_RE = /^([A-Za-z0-9]{10}|plano-[a-z0-9-]*-[A-Za-z0-9_-]{16}\.pdf)$/;
+app.get("/m/:chave", async (req, res) => {
+  const { chave } = req.params;
+  if (!CHAVE_RE.test(chave)) return res.sendStatus(404);
   try {
-    const stream = await abrir(arquivo);
-    if (!stream) return res.sendStatus(404);
-    res.set({ "Content-Type": "application/pdf", "Content-Disposition": `inline; filename="${arquivo}"`,
+    const achado = await abrir(chave);
+    if (!achado) return res.sendStatus(404);
+    const { stream, nomeDownload } = achado;
+    const ascii = nomeDownload.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^\x20-\x7e]/g, "").replace(/"/g, "");
+    res.set({ "Content-Type": "application/pdf",
+      "Content-Disposition": `inline; filename="${ascii}"; filename*=UTF-8''${encodeURIComponent(nomeDownload)}`,
       "Cache-Control": "public, max-age=86400", "X-Robots-Tag": "noindex" });
     stream.on("error", () => res.destroy()).pipe(res);
   } catch (err) {
-    console.error("[material] falha ao abrir", arquivo, err.message);
+    console.error("[material] falha ao abrir", chave, err.message);
     res.sendStatus(500);
   }
 });
