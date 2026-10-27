@@ -418,10 +418,14 @@ h1, h2, h3 { line-height: 1.1; letter-spacing: -0.02em; font-weight: 800; }
 .lead-form.is-busy input, .lead-form.is-busy select { opacity: .6; pointer-events: none; }
 .btn-spin { width: 18px; height: 18px; flex: none; border-radius: 50%; border: 2.5px solid rgba(255,255,255,.35); border-top-color: #fff; animation: btn-spin .7s linear infinite; }
 @keyframes btn-spin { to { transform: rotate(360deg); } }
-.lead-progress { display: grid; gap: 8px; }
-.lead-progress__bar { height: 4px; border-radius: 99px; background: var(--slate-100); overflow: hidden; }
-.lead-progress__bar span { display: block; height: 100%; width: 0; border-radius: inherit; background: var(--grad-brand); transition: width 11s cubic-bezier(.15,.7,.3,1); }
-.lead-progress__txt { font-size: 13.5px; font-weight: 600; color: var(--purple-700); text-align: center; }
+.lead-progress { display: grid; gap: 8px; padding: 12px 14px; border-radius: var(--radius-sm); background: var(--purple-50); border: 1px solid var(--purple-100); }
+.lead-progress__top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.lead-progress__txt { font-size: 13.5px; font-weight: 600; color: var(--purple-700); line-height: 1.35; }
+.lead-progress__pct { font-size: 18px; font-weight: 800; color: var(--purple-700); font-variant-numeric: tabular-nums; min-width: 3.2em; text-align: right; }
+.lead-progress__bar { height: 10px; border-radius: 99px; background: #fff; border: 1px solid var(--purple-100); overflow: hidden; }
+.lead-progress__bar span { position: relative; display: block; height: 100%; width: 0; border-radius: inherit; background: var(--grad-brand); overflow: hidden; }
+.lead-progress__bar span::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,.45), transparent); transform: translateX(-100%); animation: lead-shine 1.3s ease-in-out infinite; }
+@keyframes lead-shine { to { transform: translateX(100%); } }
 .lead-form__note { font-size: 12.5px; color: var(--slate-400); text-align: center; margin-top: 2px; }
 .lead-split { display: grid; grid-template-columns: 1.05fr .95fr; gap: 48px; align-items: center; }
 @media (max-width: 880px) { .lead-split { grid-template-columns: 1fr; gap: 30px; } }

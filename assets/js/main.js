@@ -166,19 +166,53 @@
     if (btn) { btn.disabled = true; btn.dataset.html = btn.innerHTML; }
     var box = document.createElement("div");
     box.className = "lead-progress";
-    box.innerHTML = '<div class="lead-progress__bar"><span></span></div><p class="lead-progress__txt" role="status" aria-live="polite"></p>';
+    box.innerHTML =
+      '<div class="lead-progress__top"><span class="lead-progress__txt" role="status" aria-live="polite"></span><b class="lead-progress__pct">0%</b></div>' +
+      '<div class="lead-progress__bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span></span></div>';
     if (btn) btn.insertAdjacentElement("afterend", box); else form.appendChild(box);
     var txt = box.querySelector(".lead-progress__txt");
-    var bar = box.querySelector(".lead-progress__bar span");
+    var pctEl = box.querySelector(".lead-progress__pct");
+    var barWrap = box.querySelector(".lead-progress__bar");
+    var bar = barWrap.querySelector("span");
+
+    // Progresso estimado: sobe rápido no começo e desacelera, sem nunca chegar a 100%
+    // antes da resposta. Fase 1 (gerando o PDF) vai até ~85%; fase 2 (envio) até ~97%;
+    // finish() completa até 100% e só então chama o callback (tela de sucesso).
+    var pct = 0, base = 0, teto = 85, tau = 4000, t0 = performance.now(), fim = null;
+    var desenha = function (v) {
+      var n = Math.floor(v);
+      bar.style.width = v + "%";
+      pctEl.textContent = n + "%";
+      barWrap.setAttribute("aria-valuenow", n);
+    };
+    var tick = function (now) {
+      if (fim) {
+        pct = Math.min(100, pct + (now - fim.last) * 0.12);
+        fim.last = now;
+        desenha(pct);
+        if (pct >= 100) { setTimeout(fim.cb, 350); return; }
+      } else {
+        pct = Math.max(pct, base + (teto - base) * (1 - Math.exp(-(now - t0) / tau)));
+        desenha(pct);
+      }
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+
     var i = 0;
     txt.textContent = PASSOS[0];
-    requestAnimationFrame(function () { requestAnimationFrame(function () { bar.style.width = "90%"; }); });
     var timer = setInterval(function () {
       if (i < PASSOS.length - 1) txt.textContent = PASSOS[++i];
     }, 2800);
     return {
       step: function (t) { clearInterval(timer); txt.textContent = t; },
-      done: function () { clearInterval(timer); bar.style.transitionDuration = ".3s"; bar.style.width = "100%"; }
+      envio: function () { base = pct; teto = 97; tau = 1500; t0 = performance.now(); },
+      finish: function (cb) {
+        if (fim) return;
+        clearInterval(timer);
+        txt.textContent = "Pronto!";
+        fim = { cb: cb, last: performance.now() };
+      }
     };
   };
   var initLeadForm = function (form) {
@@ -296,7 +330,7 @@
           
           // Qualquer outro status ou última tentativa: considerar sucesso de UX
           console.log("[DevChat] Lead enviado com sucesso (status " + response.status + ")");
-          showSuccess(form);
+          busy.finish(function () { showSuccess(form); });
         })
         .catch(function (error) {
           clearTimeout(timeoutId);
@@ -313,19 +347,19 @@
             // Última tentativa falhou: ainda mostra sucesso para UX (lead já foi salvo localmente)
             console.error("[DevChat] Falha após " + MAX_RETRIES + " tentativas:", error.message);
             console.log("[DevChat] Lead salvo localmente para sincronização posterior");
-            showSuccess(form);
+            busy.finish(function () { showSuccess(form); });
           }
         });
       };
       
       if (MATERIAL_API) setBtn(btn, "Preparando seu relatório...");
-      else busy.step("Enviando seus dados...");
+      else { busy.step("Enviando seus dados..."); busy.envio(); }
       gerarMaterial({ nome: nome, empresa: payload.empresa, nicho: payload.nicho, atendentes: atend })
         .then(function (url) {
           payload.material_url = url;
           setBtn(btn, "Enviando...");
           busy.step("Enviando seus dados para nossos consultores...");
-          busy.done();
+          busy.envio();
           sendWithRetry(1);
         });
     });
