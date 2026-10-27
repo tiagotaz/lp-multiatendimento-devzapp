@@ -149,6 +149,38 @@
       '<div class="modal__ok"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" stroke="currentColor" stroke-width="1.6"/><path d="M7 12.5l3.2 3.2L17 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
       '<h3>Recebemos seus dados!</h3><p class="modal__sub">Nossos consultores vão te enviar agora, no seu WhatsApp, um relatório gratuito para ajudar a sua operação. Fique de olho no seu celular!</p></div>';
   };
+  /* Estado "processando" do envio: spinner no botão, barra de progresso e texto que muda
+     enquanto o PDF é gerado (pode levar alguns segundos). */
+  var PASSOS = [
+    "Analisando o perfil da sua empresa...",
+    "Montando o plano para o seu segmento...",
+    "Gerando o seu relatório em PDF...",
+    "Quase pronto, só mais um instante..."
+  ];
+  var setBtn = function (btn, txt) {
+    if (btn) btn.innerHTML = '<span class="btn-spin" aria-hidden="true"></span><span>' + txt + "</span>";
+  };
+  var startBusy = function (form, btn) {
+    form.classList.add("is-busy");
+    form.setAttribute("aria-busy", "true");
+    if (btn) { btn.disabled = true; btn.dataset.html = btn.innerHTML; }
+    var box = document.createElement("div");
+    box.className = "lead-progress";
+    box.innerHTML = '<div class="lead-progress__bar"><span></span></div><p class="lead-progress__txt" role="status" aria-live="polite"></p>';
+    if (btn) btn.insertAdjacentElement("afterend", box); else form.appendChild(box);
+    var txt = box.querySelector(".lead-progress__txt");
+    var bar = box.querySelector(".lead-progress__bar span");
+    var i = 0;
+    txt.textContent = PASSOS[0];
+    requestAnimationFrame(function () { requestAnimationFrame(function () { bar.style.width = "90%"; }); });
+    var timer = setInterval(function () {
+      if (i < PASSOS.length - 1) txt.textContent = PASSOS[++i];
+    }, 2800);
+    return {
+      step: function (t) { clearInterval(timer); txt.textContent = t; },
+      done: function () { clearInterval(timer); bar.style.transitionDuration = ".3s"; bar.style.width = "100%"; }
+    };
+  };
   var initLeadForm = function (form) {
     if (!form || form.__leadInit) return;
     form.__leadInit = true;
@@ -176,7 +208,8 @@
       if (bad) { bad.focus(); return; }
 
       var btn = form.querySelector("button[type=submit]");
-      if (btn) { btn.disabled = true; btn.dataset.html = btn.innerHTML; btn.innerHTML = "Enviando..."; }
+      var busy = startBusy(form, btn);
+      setBtn(btn, "Enviando...");
 
       var utms = getUTMs();
       var payload = {
@@ -236,7 +269,7 @@
           if ((response.status === 529 || response.status === 503) && attempt < MAX_RETRIES) {
             console.warn("[DevChat] Servidor sobrecarregado (status " + response.status + "), tentativa " + attempt + " de " + MAX_RETRIES);
             var delay = RETRY_DELAY * Math.pow(2, attempt - 1); // backoff exponencial
-            if (btn) btn.innerHTML = "Tentando novamente (" + attempt + "/" + MAX_RETRIES + ")...";
+            setBtn(btn, "Tentando novamente (" + attempt + "/" + MAX_RETRIES + ")...");
             setTimeout(function () {
               sendWithRetry(attempt + 1);
             }, delay);
@@ -272,7 +305,7 @@
           if (attempt < MAX_RETRIES) {
             console.warn("[DevChat] Erro ao enviar lead:", error.message, "- tentativa " + attempt + " de " + MAX_RETRIES);
             var delay = RETRY_DELAY * Math.pow(2, attempt - 1);
-            if (btn) btn.innerHTML = "Tentando novamente (" + attempt + "/" + MAX_RETRIES + ")...";
+            setBtn(btn, "Tentando novamente (" + attempt + "/" + MAX_RETRIES + ")...");
             setTimeout(function () {
               sendWithRetry(attempt + 1);
             }, delay);
@@ -285,11 +318,14 @@
         });
       };
       
-      if (btn && MATERIAL_API) btn.innerHTML = "Preparando seu material...";
+      if (MATERIAL_API) setBtn(btn, "Preparando seu relatório...");
+      else busy.step("Enviando seus dados...");
       gerarMaterial({ nome: nome, empresa: payload.empresa, nicho: payload.nicho, atendentes: atend })
         .then(function (url) {
           payload.material_url = url;
-          if (btn) btn.innerHTML = "Enviando...";
+          setBtn(btn, "Enviando...");
+          busy.step("Enviando seus dados para nossos consultores...");
+          busy.done();
           sendWithRetry(1);
         });
     });

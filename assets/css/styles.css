@@ -414,6 +414,14 @@ h1, h2, h3 { line-height: 1.1; letter-spacing: -0.02em; font-weight: 800; }
 .lead-form input, .lead-form select { width: 100%; padding: 13px 14px; border: 1.5px solid var(--slate-200); border-radius: var(--radius-sm); font: inherit; font-size: 15px; background: var(--bg); color: var(--ink); }
 .lead-form input:focus, .lead-form select:focus { outline: none; border-color: var(--purple-500); box-shadow: 0 0 0 3px var(--purple-100); }
 .lead-form .btn { margin-top: 4px; }
+.lead-form .btn:disabled { cursor: progress; opacity: .92; transform: none; }
+.lead-form.is-busy input, .lead-form.is-busy select { opacity: .6; pointer-events: none; }
+.btn-spin { width: 18px; height: 18px; flex: none; border-radius: 50%; border: 2.5px solid rgba(255,255,255,.35); border-top-color: #fff; animation: btn-spin .7s linear infinite; }
+@keyframes btn-spin { to { transform: rotate(360deg); } }
+.lead-progress { display: grid; gap: 8px; }
+.lead-progress__bar { height: 4px; border-radius: 99px; background: var(--slate-100); overflow: hidden; }
+.lead-progress__bar span { display: block; height: 100%; width: 0; border-radius: inherit; background: var(--grad-brand); transition: width 11s cubic-bezier(.15,.7,.3,1); }
+.lead-progress__txt { font-size: 13.5px; font-weight: 600; color: var(--purple-700); text-align: center; }
 .lead-form__note { font-size: 12.5px; color: var(--slate-400); text-align: center; margin-top: 2px; }
 .lead-split { display: grid; grid-template-columns: 1.05fr .95fr; gap: 48px; align-items: center; }
 @media (max-width: 880px) { .lead-split { grid-template-columns: 1fr; gap: 30px; } }
