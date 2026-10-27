@@ -147,7 +147,7 @@
     var box = form.closest(".modal, .lead-card") || form;
     box.innerHTML =
       '<div class="modal__ok"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" stroke="currentColor" stroke-width="1.6"/><path d="M7 12.5l3.2 3.2L17 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
-      '<h3>Recebemos seus dados!</h3><p class="modal__sub">Nossos consultores vão entrar em contato com você pelo WhatsApp informado. Fique de olho no seu celular!</p></div>';
+      '<h3>Recebemos seus dados!</h3><p class="modal__sub">Nossos consultores vão te enviar agora, no seu WhatsApp, um relatório gratuito para ajudar a sua operação. Fique de olho no seu celular!</p></div>';
   };
   var initLeadForm = function (form) {
     if (!form || form.__leadInit) return;
