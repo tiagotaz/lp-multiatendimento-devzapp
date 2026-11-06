@@ -406,8 +406,21 @@
     });
     modalReady = true;
   };
-  var openModal = function () {
+  // Card de plano clicado → faixa de atendentes do select (ex.: "4 operadores" → "3 a 5")
+  var atendentesDoPlano = function (el) {
+    var plan = el.closest(".plan");
+    var ops = plan && plan.querySelector(".plan__ops");
+    var n = ops ? parseInt(ops.textContent, 10) : NaN;
+    if (!n) return null;
+    if (n <= 2) return "1 a 2";
+    if (n <= 5) return "3 a 5";
+    if (n <= 10) return "6 a 10";
+    if (n <= 20) return "11 a 20";
+    return "21 ou mais";
+  };
+  var openModal = function (atendentes) {
     ensureModal();
+    if (atendentes) modal.querySelector("[name=atendentes]").value = atendentes;
     modal.hidden = false;
     document.body.classList.add("modal-open");
     requestAnimationFrame(function () { modal.classList.add("is-open"); });
@@ -431,7 +444,7 @@
     var href = (a.getAttribute("href") || "").toLowerCase();
     if (MODAL_TRIGGER.test(txt)) {
       ev.preventDefault();
-      openModal();
+      openModal(atendentesDoPlano(a));
       return;
     }
     if (href.indexOf("wa.me") !== -1 || href.indexOf("whatsapp") !== -1) {
